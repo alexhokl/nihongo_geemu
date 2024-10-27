@@ -1,0 +1,26 @@
+version: '3'
+
+tasks:
+
+  build:
+    desc: Build
+    cmds:
+      - flutter build macos
+      - flutter build apk
+
+  run:
+    desc: Intsall
+    cmd: flutter run -d macos
+
+  test:
+    desc: Test
+    cmd: flutter test --no-pub --coverage
+
+  coverage:
+    desc: Generate HTML of coverage and open in browser
+    preconditions:
+      - test -f coverage/lcov.info
+      - sh: "[ ! -z \"$(which genhtml)\" ]"
+    cmds:
+      - genhtml coverage/lcov.info -o coverage/html
+      - open coverage/html/index.html
