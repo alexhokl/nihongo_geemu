@@ -3,7 +3,7 @@ import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 void main() {
   // Init ffi loader if needed.
-  sqfliteFfiInit();
+  // sqfliteFfiInit();
   test('simple sqflite example', () async {
     var db = await databaseFactoryFfi.openDatabase(inMemoryDatabasePath);
     expect(await db.getVersion(), 0);

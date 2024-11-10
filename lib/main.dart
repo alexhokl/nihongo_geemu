@@ -1,43 +1,33 @@
 import 'package:flutter/material.dart';
+import 'package:nihogo_geemu/data_operations.dart';
+import 'package:nihogo_geemu/database_operation.dart';
+import 'package:nihogo_geemu/entry.dart';
+import 'package:nihogo_geemu/question.dart';
+import 'package:nihogo_geemu/question_page.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const NihongoGeemu());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class NihongoGeemu extends StatelessWidget {
+  const NihongoGeemu({super.key});
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Japanese-English Translation Test',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const GameHomePage(title: 'Japanese-English Translation Test'),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+class GameHomePage extends StatefulWidget {
+  const GameHomePage({super.key, required this.title});
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -51,21 +41,76 @@ class MyHomePage extends StatefulWidget {
   final String title;
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<GameHomePage> createState() => _GameHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+class _GameHomePageState extends State<GameHomePage> {
+  List<Entry> entries = [];
+  final List<String> labels = ['Nouns', 'Verbs', 'Adjectives', 'Adverbs', 'Expressions', 'Conjunctions'];
+  final List<String> preSelectedLabels = ["Nouns"];
+  List<bool> isSelectedLabel = [];
+  final List<String> levels = ['N5', 'N4', 'N3', 'N2', 'N1'];
+  final List<String> preSelectedLevels = ['N5'];
+  List<bool> isSelectedLevel = [];
+  List<Question> questions = [];
 
-  void _incrementCounter() {
+  @override
+  void initState() {
+    super.initState();
+    _loadEntriesAndLabels();
+    isSelectedLevel = List.generate(levels.length, (index) => preSelectedLevels.contains(levels[index]));
+    isSelectedLabel = List.generate(labels.length, (index) => preSelectedLabels.contains(labels[index]));
+  }
+
+  Future<void> _loadEntriesAndLabels() async {
+    List<Entry> loadedEntries = await getAllEntries();
     setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
+      entries = loadedEntries;
     });
+  }
+
+  _onStartGame() {
+    List<String> selectedLabels = [];
+    for (int i = 0; i < isSelectedLabel.length; i++) {
+      if (isSelectedLabel[i]) {
+        selectedLabels.add(labels[i]);
+      }
+    }
+    for (int i = 0; i < isSelectedLevel.length; i++) {
+      if (isSelectedLevel[i]) {
+        selectedLabels.add(levels[i]);
+      }
+    }
+    questions = getEntriesByLabel(entries, selectedLabels).map((entry) => Question(
+      kanji: entry.kanji,
+      kana: entry.kana,
+      english: entry.english,
+      labels: entry.labels,
+    )).toList();
+    if (questions.isEmpty) {
+      ScaffoldMessenger.of(context)
+        ..removeCurrentSnackBar()
+        ..showSnackBar(const SnackBar(content: Text('Sorry no questions found for the selected labels')));
+      return;
+    }
+    Navigator.of(context).push(_createRoute(questions));
+  }
+
+  Route _createRoute(List<Question> questions) {
+    return PageRouteBuilder(
+      pageBuilder: (context, animation, secondaryAnimation) => QuestionPage(questions: questions),
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        const begin = Offset(1.0, 0.0);
+        const end = Offset.zero;
+        const curve = Curves.ease;
+        var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+        var offsetAnimation = animation.drive(tween);
+        return SlideTransition(
+          position: offsetAnimation,
+          child: child,
+        );
+      },
+    );
   }
 
   @override
@@ -105,20 +150,33 @@ class _MyHomePageState extends State<MyHomePage> {
           // wireframe for each widget.
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
+            ToggleButtons(
+              isSelected: isSelectedLevel,
+              borderRadius: BorderRadius.circular(8.0),
+              children: levels.map((level) => Text(level)).toList(),
+              onPressed: (int index) {
+                setState(() {
+                  isSelectedLevel[index] = !isSelectedLevel[index];
+                });
+              },
             ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+            ToggleButtons(
+              isSelected: isSelectedLabel,
+              borderRadius: BorderRadius.circular(8.0),
+              children: labels.map((label) => Text(label)).toList(),
+              onPressed: (int index) {
+                setState(() {
+                  isSelectedLabel[index] = !isSelectedLabel[index];
+                });
+              },
             ),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
+        onPressed: _onStartGame,
+        tooltip: 'start game',
+        child: const Icon(Icons.play_arrow),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
