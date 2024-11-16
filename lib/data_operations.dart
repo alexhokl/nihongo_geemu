@@ -11,3 +11,14 @@ List<Entry> getEntriesByLabel(List<Entry> entries, List<String> selectedLabels) 
   return filteredEntries;
 }
 
+void setSelected(List<bool> isSelected, int index) {
+  for (int i = 0; i < isSelected.length; i++) {
+    if (i == index) {
+      isSelected[i] = !isSelected[index];
+    }
+    else {
+      isSelected[i] = false;
+    }
+  }
+}
+

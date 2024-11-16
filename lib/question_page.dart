@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:nihogo_geemu/question.dart';
 import 'dart:math';
 
+import 'package:nihogo_geemu/widgets/snack_bar.dart';
+
 class QuestionPage extends StatefulWidget {
   const QuestionPage({super.key, required this.questions});
   final List<Question> questions;
@@ -20,16 +22,12 @@ class _QuestionPageState extends State<QuestionPage> {
     if (widget.questions[questionIndex].answer == widget.questions[questionIndex].kana ||
         widget.questions[questionIndex].answer == widget.questions[questionIndex].kanji) {
       widget.questions[questionIndex].correct = true;
-      ScaffoldMessenger.of(context)
-        ..removeCurrentSnackBar()
-        ..showSnackBar(const SnackBar(content: Text('Correct!')));
+      correctAnswerSnackBar(context);
       Navigator.of(context).push(_createRoute(widget.questions));
       return;
     }
 
-    ScaffoldMessenger.of(context)
-      ..removeCurrentSnackBar()
-      ..showSnackBar(const SnackBar(content: Text('Sorry keep trying!')));
+    wrongAnswerSnackBar(context);
   }
 
   Route _createRoute(List<Question> questions) {

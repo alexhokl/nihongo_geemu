@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'dart:io' as io;
+import 'package:flutter/material.dart';
+import 'package:nihogo_geemu/cloud_storage.dart';
 import 'package:nihogo_geemu/entry.dart';
 import 'package:path/path.dart' as p;
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
@@ -28,6 +30,30 @@ Future<List<String>> getLabels() async {
   return List.generate(maps.length, (i) {
     return maps[i]['LabelName'].toString();
   });
+}
+
+Future<bool> ensureDatabaseFile(String localPath, String? localHash, bool hasConnection, String bucketName, String bucketPath) async {
+  final databaseLocalPath = await _getDatabaseLocalPath();
+  if (hasConnection) {
+    if (localHash != null) {
+      final remoteDbMD5Hash = await getMD5HashFromBucket(bucketName, bucketPath);
+      if (remoteDbMD5Hash == null) {
+        debugPrint('Failed to get MD5 hash from the remote database file');
+        return true;
+      }
+      if (remoteDbMD5Hash == localHash) {
+        debugPrint('Database file is up-to-date');
+        return true;
+      }
+    }
+    await downloadFile(bucketName, bucketPath, databaseLocalPath);
+    debugPrint('Downloaded database file from $bucketPath to $databaseLocalPath');
+    return true;
+  }
+  else if (localHash != null) {
+    return true;
+  }
+  return false;
 }
 
 Future<Database> _getDatabaseConnection() async {

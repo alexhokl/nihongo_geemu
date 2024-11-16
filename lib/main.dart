@@ -6,6 +6,8 @@ import 'package:nihogo_geemu/entry.dart';
 import 'package:nihogo_geemu/local_storage.dart';
 import 'package:nihogo_geemu/question.dart';
 import 'package:nihogo_geemu/question_page.dart';
+import 'package:nihogo_geemu/widgets/button.dart';
+import 'package:nihogo_geemu/widgets/snack_bar.dart';
 
 void main() {
   runApp(const NihongoGeemu());
@@ -58,43 +60,22 @@ class _GameHomePageState extends State<GameHomePage> {
     final databaseLocalPath = await getDatabaseLocalPath();
     final localDbMD5Hash = await getMD5HashFromLocalFile(databaseLocalPath);
     final hasWiFi = await hasConnection();
-    List<Entry> loadedEntries = [];
-    if (hasWiFi) {
-      const bucketName = 'alexhokl_public';
-      const bucketPath = 'japanese_vocab.db';
-      if (localDbMD5Hash != null) {
-        final remoteDbMD5Hash = await getMD5HashFromBucket(bucketName, bucketPath);
-        if (remoteDbMD5Hash == null) {
-          debugPrint('Failed to get MD5 hash from the remote database file');
-          loadedEntries = await getAllEntries();
-        }
-        if (remoteDbMD5Hash == localDbMD5Hash) {
-          debugPrint('Database file is up-to-date');
-          loadedEntries = await getAllEntries();
-        }
-      }
-      await downloadFile(bucketName, bucketPath, databaseLocalPath);
-      debugPrint('Downloaded database file from $bucketPath to $databaseLocalPath');
-      loadedEntries = await getAllEntries();
-    }
-    else if (localDbMD5Hash != null) {
-      loadedEntries = await getAllEntries();
-    }
-    else {
-      loadedEntries = [];
-    }
+    final hasDatabaseFile =
+      await ensureDatabaseFile(
+        databaseLocalPath,
+        localDbMD5Hash,
+        hasWiFi,
+        'alexhokl_public',
+        'japanese_vocab.db');
+    final List<Entry> loadedEntries =
+      hasDatabaseFile ? await getAllEntries() : [];
+
     setState(() {
       if (localDbMD5Hash == null && !hasWiFi) {
-        const warningMessage = 'Please connect to the internet to download the question database.';
-        ScaffoldMessenger.of(context)
-          ..removeCurrentSnackBar()
-          ..showSnackBar(const SnackBar(content: Text(warningMessage)));
+        noInternetConnectinoSnackBar(context);
       }
       else if (!hasWiFi) {
-        const infoMessage = 'No internet connection. Using cached question database.';
-        ScaffoldMessenger.of(context)
-          ..removeCurrentSnackBar()
-          ..showSnackBar(const SnackBar(content: Text(infoMessage)));
+        workingOfflineSnackBar(context);
       }
       entries = loadedEntries;
     });
@@ -119,9 +100,7 @@ class _GameHomePageState extends State<GameHomePage> {
       labels: entry.labels,
     )).toList();
     if (questions.isEmpty) {
-      ScaffoldMessenger.of(context)
-        ..removeCurrentSnackBar()
-        ..showSnackBar(const SnackBar(content: Text('Sorry no questions found for the selected labels')));
+      noQuestionsFoundSnackBar(context);
       return;
     }
     Navigator.of(context).push(_createRoute(questions));
@@ -155,40 +134,16 @@ class _GameHomePageState extends State<GameHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            ToggleButtons(
-              isSelected: isSelectedLevel,
-              borderRadius: BorderRadius.circular(8.0),
-              children: levels.map((level) => Text(level)).toList(),
-              onPressed: (int index) {
-                setState(() {
-                  for (int i = 0; i < isSelectedLevel.length; i++) {
-                     if (i == index) {
-                        isSelectedLevel[i] = !isSelectedLevel[index];
-                     }
-                     else {
-                        isSelectedLevel[i] = false;
-                     }
-                  }
-                });
-              },
-            ),
-            ToggleButtons(
-              isSelected: isSelectedLabel,
-              borderRadius: BorderRadius.circular(8.0),
-              children: labels.map((label) => Text(label)).toList(),
-              onPressed: (int index) {
-                setState(() {
-                  for (int i = 0; i < isSelectedLabel.length; i++) {
-                     if (i == index) {
-                        isSelectedLabel[i] = !isSelectedLabel[index];
-                     }
-                     else {
-                        isSelectedLabel[i] = false;
-                     }
-                  }
-                });
-              },
-            ),
+            createToggleButtons(levels, isSelectedLevel, (int index) {
+              setState(() {
+                setSelected(isSelectedLevel, index);
+              });
+            }),
+            createToggleButtons(labels, isSelectedLabel, (int index) {
+              setState(() {
+                setSelected(isSelectedLabel, index);
+              });
+            }),
           ],
         ),
       ),
