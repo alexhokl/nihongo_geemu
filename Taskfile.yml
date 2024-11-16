@@ -5,11 +5,19 @@ tasks:
   build:
     desc: Build
     cmds:
-      - flutter build macos
-      - flutter build apk
+      - task: mac
+      - task: apk
+
+  mac:
+    desc: Build MacOS
+    cmd: flutter build macos
+
+  apk:
+    desc: Build APK
+    cmd: flutter build apk
 
   run:
-    desc: Intsall
+    desc: Run on MacOS
     cmd: flutter run -d macos
 
   test:
