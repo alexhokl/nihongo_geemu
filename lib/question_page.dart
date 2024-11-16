@@ -15,6 +15,7 @@ class QuestionPage extends StatefulWidget {
 class _QuestionPageState extends State<QuestionPage> {
   int questionIndex = 0;
   int shownCount = 1;
+  int totalQuestionCount = 0;
   bool filled = false;
   bool completedAllQuestions = false;
 
@@ -80,6 +81,7 @@ class _QuestionPageState extends State<QuestionPage> {
     questionIndex = getQuestionIndex();
     widget.questions[questionIndex].shown = true;
     shownCount = getShownCount();
+    totalQuestionCount = widget.questions.length;
   }
 
   @override
@@ -108,7 +110,7 @@ class _QuestionPageState extends State<QuestionPage> {
     }
     return Scaffold(
       appBar: AppBar(
-        title: Text('Question $shownCount'),
+        title: Text('Question $shownCount of $totalQuestionCount'),
       ),
       body: Center(
         child: Padding(
