@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:nihogo_geemu/cloud_storage.dart';
 import 'package:nihogo_geemu/data_operations.dart';
 import 'package:nihogo_geemu/database_operation.dart';
 import 'package:nihogo_geemu/entry.dart';
+import 'package:nihogo_geemu/local_storage.dart';
 import 'package:nihogo_geemu/question.dart';
 import 'package:nihogo_geemu/question_page.dart';
 
@@ -12,7 +14,6 @@ void main() {
 class NihongoGeemu extends StatelessWidget {
   const NihongoGeemu({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -28,15 +29,6 @@ class NihongoGeemu extends StatelessWidget {
 
 class GameHomePage extends StatefulWidget {
   const GameHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
 
   final String title;
 
@@ -63,8 +55,47 @@ class _GameHomePageState extends State<GameHomePage> {
   }
 
   Future<void> _loadEntriesAndLabels() async {
-    List<Entry> loadedEntries = await getAllEntries();
+    final databaseLocalPath = await getDatabaseLocalPath();
+    final localDbMD5Hash = await getMD5HashFromLocalFile(databaseLocalPath);
+    final hasWiFi = await hasConnection();
+    List<Entry> loadedEntries = [];
+    if (hasWiFi) {
+      const bucketName = 'alexhokl_public';
+      const bucketPath = 'japanese_vocab.db';
+      if (localDbMD5Hash != null) {
+        final remoteDbMD5Hash = await getMD5HashFromBucket(bucketName, bucketPath);
+        if (remoteDbMD5Hash == null) {
+          debugPrint('Failed to get MD5 hash from the remote database file');
+          loadedEntries = await getAllEntries();
+        }
+        if (remoteDbMD5Hash == localDbMD5Hash) {
+          debugPrint('Database file is up-to-date');
+          loadedEntries = await getAllEntries();
+        }
+      }
+      await downloadFile(bucketName, bucketPath, databaseLocalPath);
+      debugPrint('Downloaded database file from $bucketPath to $databaseLocalPath');
+      loadedEntries = await getAllEntries();
+    }
+    else if (localDbMD5Hash != null) {
+      loadedEntries = await getAllEntries();
+    }
+    else {
+      loadedEntries = [];
+    }
     setState(() {
+      if (localDbMD5Hash == null && !hasWiFi) {
+        const warningMessage = 'Please connect to the internet to download the question database.';
+        ScaffoldMessenger.of(context)
+          ..removeCurrentSnackBar()
+          ..showSnackBar(const SnackBar(content: Text(warningMessage)));
+      }
+      else if (!hasWiFi) {
+        const infoMessage = 'No internet connection. Using cached question database.';
+        ScaffoldMessenger.of(context)
+          ..removeCurrentSnackBar()
+          ..showSnackBar(const SnackBar(content: Text(infoMessage)));
+      }
       entries = loadedEntries;
     });
   }
@@ -115,39 +146,13 @@ class _GameHomePageState extends State<GameHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
       appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
       ),
       body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
         child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             ToggleButtons(
@@ -156,7 +161,14 @@ class _GameHomePageState extends State<GameHomePage> {
               children: levels.map((level) => Text(level)).toList(),
               onPressed: (int index) {
                 setState(() {
-                  isSelectedLevel[index] = !isSelectedLevel[index];
+                  for (int i = 0; i < isSelectedLevel.length; i++) {
+                     if (i == index) {
+                        isSelectedLevel[i] = !isSelectedLevel[index];
+                     }
+                     else {
+                        isSelectedLevel[i] = false;
+                     }
+                  }
                 });
               },
             ),
@@ -166,7 +178,14 @@ class _GameHomePageState extends State<GameHomePage> {
               children: labels.map((label) => Text(label)).toList(),
               onPressed: (int index) {
                 setState(() {
-                  isSelectedLabel[index] = !isSelectedLabel[index];
+                  for (int i = 0; i < isSelectedLabel.length; i++) {
+                     if (i == index) {
+                        isSelectedLabel[i] = !isSelectedLabel[index];
+                     }
+                     else {
+                        isSelectedLabel[i] = false;
+                     }
+                  }
                 });
               },
             ),
