@@ -24,7 +24,7 @@ class NihongoGeemu extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
         useMaterial3: true,
       ),
-      home: const GameHomePage(title: 'Japanese-English Translation Test'),
+      home: const GameHomePage(title: '日本語ゲーム'),
     );
   }
 }
