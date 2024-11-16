@@ -24,3 +24,11 @@ tasks:
     cmds:
       - genhtml coverage/lcov.info -o coverage/html
       - open coverage/html/index.html
+
+  lint:
+    desc: Lint
+    cmd: dart fix --dry-run
+
+  lint-fix:
+    desc: Lint Fix
+    cmd: dart fix --apply
