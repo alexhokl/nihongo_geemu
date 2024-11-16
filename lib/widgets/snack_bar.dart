@@ -6,7 +6,10 @@ void noInternetConnectinoSnackBar(BuildContext context) {
     ..removeCurrentSnackBar()
     ..showSnackBar(
       const SnackBar(
-        content: Text(msg),
+        content: Text(
+          msg,
+          style: TextStyle(color: Colors.black),
+        ),
         backgroundColor: Colors.red,
     ));
 }
@@ -17,7 +20,10 @@ void workingOfflineSnackBar(BuildContext context) {
     ..removeCurrentSnackBar()
     ..showSnackBar(
       const SnackBar(
-        content: Text(msg),
+        content: Text(
+          msg,
+          style: TextStyle(color: Colors.black),
+        ),
         backgroundColor: Colors.amberAccent,
     ));
 }
@@ -28,7 +34,10 @@ void noQuestionsFoundSnackBar(BuildContext context) {
     ..removeCurrentSnackBar()
     ..showSnackBar(
       const SnackBar(
-        content: Text(msg),
+        content: Text(
+          msg,
+          style: TextStyle(color: Colors.black),
+        ),
         backgroundColor: Colors.red,
     ));
 }
@@ -39,7 +48,10 @@ void correctAnswerSnackBar(BuildContext context) {
     ..removeCurrentSnackBar()
     ..showSnackBar(
       const SnackBar(
-        content: Text(msg),
+        content: Text(
+          msg,
+          style: TextStyle(color: Colors.black),
+        ),
         backgroundColor: Colors.greenAccent,
     ));
 }
@@ -50,7 +62,10 @@ void wrongAnswerSnackBar(BuildContext context) {
     ..removeCurrentSnackBar()
     ..showSnackBar(
       const SnackBar(
-        content: Text(msg),
+        content: Text(
+          msg,
+          style: TextStyle(color: Colors.black),
+        ),
         backgroundColor: Colors.amberAccent,
     ));
 }
