@@ -134,16 +134,28 @@ class _GameHomePageState extends State<GameHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            createToggleButtons(levels, isSelectedLevel, (int index) {
-              setState(() {
-                setSelected(isSelectedLevel, index);
-              });
-            }),
-            createToggleButtons(labels, isSelectedLabel, (int index) {
-              setState(() {
-                setSelected(isSelectedLabel, index);
-              });
-            }),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('JLPT Level: '),
+                  createToggleButtons(levels, isSelectedLevel, (int index) {
+                    setState(() {
+                      setSelected(isSelectedLevel, index);
+                    });
+                  }),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: createToggleButtons(labels, isSelectedLabel, (int index) {
+                setState(() {
+                  setSelected(isSelectedLabel, index);
+                });
+              }),
+            ),
           ],
         ),
       ),
