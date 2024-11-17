@@ -21,6 +21,10 @@ tasks:
     platforms: [darwin]
     cmd: open ./build/macos/Build/Products/Release/nihogo_geemu.app
 
+  run-android:
+    desc: Run on Android
+    cmd: flutter devices --machine | jq -r '.[] | select(.targetPlatform | contains("android")) | .id' | head -n 1 | xargs flutter run -d
+
   test:
     desc: Test
     cmd: flutter test --no-pub --coverage
