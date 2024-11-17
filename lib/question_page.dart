@@ -20,8 +20,10 @@ class _QuestionPageState extends State<QuestionPage> {
   bool completedAllQuestions = false;
 
   _onComplete() {
-    if (widget.questions[questionIndex].answer == widget.questions[questionIndex].kana ||
-        widget.questions[questionIndex].answer == widget.questions[questionIndex].kanji) {
+    final kana = widget.questions[questionIndex].kana.trim();
+    final kanji = widget.questions[questionIndex].kanji.trim();
+    final answer = widget.questions[questionIndex].answer.trim();
+    if (answer == kana || answer == kanji) {
       widget.questions[questionIndex].correct = true;
       correctAnswerSnackBar(context);
       Navigator.of(context).push(_createRoute(widget.questions));
