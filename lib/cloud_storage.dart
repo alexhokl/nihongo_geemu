@@ -34,6 +34,10 @@ Future<void> downloadFile(String bucketName, String bucketPath, String localPath
     throw Exception('Failed to download file from GCP Cloud Storage: ${response.statusCode}');
   }
 
+  if (!File(localPath).existsSync()) {
+    File(localPath).createSync(recursive: true);
+  }
+
   File(localPath).writeAsBytesSync(response.bodyBytes);
 }
 

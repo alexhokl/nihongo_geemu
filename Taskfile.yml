@@ -18,7 +18,8 @@ tasks:
 
   run:
     desc: Run on MacOS
-    cmd: flutter run -d macos
+    platforms: [darwin]
+    cmd: open ./build/macos/Build/Products/Release/nihogo_geemu.app
 
   test:
     desc: Test

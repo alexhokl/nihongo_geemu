@@ -6,6 +6,7 @@ import 'package:nihogo_geemu/entry.dart';
 import 'package:nihogo_geemu/local_storage.dart';
 import 'package:nihogo_geemu/question.dart';
 import 'package:nihogo_geemu/question_page.dart';
+import 'package:nihogo_geemu/theme.dart';
 import 'package:nihogo_geemu/widgets/button.dart';
 import 'package:nihogo_geemu/widgets/snack_bar.dart';
 
@@ -18,13 +19,13 @@ class NihongoGeemu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const title = '日本語ゲーム';
     return MaterialApp(
-      title: 'Japanese-English Translation Test',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
-        useMaterial3: true,
-      ),
-      home: const GameHomePage(title: '日本語ゲーム'),
+      title: title,
+      home: const GameHomePage(title: title),
+      theme: getLightTheme(),
+      darkTheme: getDarkTheme(),
+      themeMode: ThemeMode.light,
     );
   }
 }
