@@ -5,8 +5,15 @@ import 'dart:math';
 import 'package:nihogo_geemu/widgets/snack_bar.dart';
 
 class QuestionPage extends StatefulWidget {
-  const QuestionPage({super.key, required this.questions});
+  const QuestionPage({
+    super.key,
+    required this.questions,
+    required this.selectedLevel,
+    required this.selectedLabel,
+  });
   final List<Question> questions;
+  final String selectedLevel;
+  final String selectedLabel;
 
   @override
   State<QuestionPage> createState() => _QuestionPageState();
@@ -35,7 +42,12 @@ class _QuestionPageState extends State<QuestionPage> {
 
   Route _createRoute(List<Question> questions) {
     return PageRouteBuilder(
-      pageBuilder: (context, animation, secondaryAnimation) => QuestionPage(questions: questions),
+      pageBuilder: (context, animation, secondaryAnimation) =>
+        QuestionPage(
+          questions: questions,
+          selectedLevel: widget.selectedLevel,
+          selectedLabel: widget.selectedLabel
+        ),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         const begin = Offset(1.0, 0.0);
         const end = Offset.zero;
@@ -112,7 +124,7 @@ class _QuestionPageState extends State<QuestionPage> {
     }
     return Scaffold(
       appBar: AppBar(
-        title: Text('Question $shownCount of $totalQuestionCount'),
+        title: Text('Question $shownCount / $totalQuestionCount of ${widget.selectedLabel} in ${widget.selectedLevel}'),
       ),
       body: Center(
         child: Padding(

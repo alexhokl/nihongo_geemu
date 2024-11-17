@@ -83,18 +83,9 @@ class _GameHomePageState extends State<GameHomePage> {
   }
 
   _onStartGame() {
-    List<String> selectedLabels = [];
-    for (int i = 0; i < isSelectedLabel.length; i++) {
-      if (isSelectedLabel[i]) {
-        selectedLabels.add(labels[i]);
-      }
-    }
-    for (int i = 0; i < isSelectedLevel.length; i++) {
-      if (isSelectedLevel[i]) {
-        selectedLabels.add(levels[i]);
-      }
-    }
-    questions = getEntriesByLabel(entries, selectedLabels).map((entry) => Question(
+    String selectedLabel = labels[isSelectedLabel.indexOf(true)];
+    String selectedLevel = levels[isSelectedLevel.indexOf(true)];
+    questions = getEntriesByLabel(entries, [selectedLevel, selectedLabel]).map((entry) => Question(
       kanji: entry.kanji,
       kana: entry.kana,
       english: entry.english,
@@ -104,12 +95,17 @@ class _GameHomePageState extends State<GameHomePage> {
       noQuestionsFoundSnackBar(context);
       return;
     }
-    Navigator.of(context).push(_createRoute(questions));
+    Navigator.of(context).push(_createRoute(questions, selectedLevel, selectedLabel));
   }
 
-  Route _createRoute(List<Question> questions) {
+  Route _createRoute(List<Question> questions, String selectedLevel, String selectedLabel) {
     return PageRouteBuilder(
-      pageBuilder: (context, animation, secondaryAnimation) => QuestionPage(questions: questions),
+      pageBuilder: (context, animation, secondaryAnimation) =>
+        QuestionPage(
+          questions: questions,
+          selectedLevel: selectedLevel,
+          selectedLabel: selectedLabel
+        ),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         const begin = Offset(1.0, 0.0);
         const end = Offset.zero;
