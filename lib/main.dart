@@ -40,24 +40,44 @@ class GameHomePage extends StatefulWidget {
 }
 
 class _GameHomePageState extends State<GameHomePage> {
-  List<Entry> entries = [];
-  final List<String> labels = ['Nouns', 'Verbs', 'Adjectives', 'Adverbs', 'Expressions', 'Conjunctions'];
   final List<String> preSelectedLabels = ["Nouns"];
-  List<bool> isSelectedLabel = [];
-  final List<String> levels = ['N5', 'N4', 'N3', 'N2', 'N1'];
   final List<String> preSelectedLevels = ['N5'];
-  List<bool> isSelectedLevel = [];
+  List<Entry> entries = [];
   List<Question> questions = [];
+  List<String> labels = [];
+  List<bool> isSelectedLabel = [];
+  List<String> levels = [];
+  List<bool> isSelectedLevel = [];
 
   @override
   void initState() {
     super.initState();
-    _loadEntriesAndLabels();
-    isSelectedLevel = List.generate(levels.length, (index) => preSelectedLevels.contains(levels[index]));
-    isSelectedLabel = List.generate(labels.length, (index) => preSelectedLabels.contains(labels[index]));
+    _setDatabase();
   }
 
-  Future<void> _loadEntriesAndLabels() async {
+  // Future<void> _loadLevels() async {
+  //   await Future.delayed(Duration(seconds: 5));
+  //   setState(() {
+  //     levels = ['N5', 'N4', 'N3', 'N2', 'N1'];
+  //     isSelectedLevel =
+  //       List.generate(
+  //         levels.length,
+  //         (index) => preSelectedLevels.contains(levels[index]));
+  //   });
+  // }
+  //
+  // Future<void> _loadLabels() async {
+  //   await Future.delayed(Duration(seconds: 5));
+  //   setState(() {
+  //     labels = ['Nouns', 'Verbs', 'Adjectives', 'Adverbs', 'Expressions', 'Conjunctions'];
+  //     isSelectedLabel =
+  //       List.generate(
+  //         labels.length,
+  //         (index) => preSelectedLabels.contains(labels[index]));
+  //   });
+  // }
+
+  Future<void> _setDatabase() async {
     final databaseLocalPath = await getDatabaseLocalPath();
     final localDbMD5Hash = await getMD5HashFromLocalFile(databaseLocalPath);
     final hasWiFi = await hasConnection();
@@ -68,8 +88,27 @@ class _GameHomePageState extends State<GameHomePage> {
         hasWiFi,
         'alexhokl_public',
         'japanese_vocab.db');
+
+    await _loadEntries(hasDatabaseFile, localDbMD5Hash, hasWiFi);
+    // await _loadLevels();
+    // await _loadLabels();
+  }
+
+  Future<void> _loadEntries(bool hasDatabaseFile, String? localDbMD5Hash, bool hasWiFi) async {
+    final hasWiFi = await hasConnection();
     final List<Entry> loadedEntries =
       hasDatabaseFile ? await getAllEntries() : [];
+
+    final loadedLevels = getLevelsFromEntries(loadedEntries);
+    final loadedLabels = getLabelFromEntries(loadedEntries);
+    final isSelectedLevel =
+      List.generate(
+        loadedLevels.length,
+        (index) => preSelectedLevels.contains(loadedLevels[index]));
+    final isSelectedLabel =
+      List.generate(
+        loadedLabels.length,
+        (index) => preSelectedLabels.contains(loadedLabels[index]));
 
     setState(() {
       if (localDbMD5Hash == null && !hasWiFi) {
@@ -79,7 +118,33 @@ class _GameHomePageState extends State<GameHomePage> {
         workingOfflineSnackBar(context);
       }
       entries = loadedEntries;
+      levels = loadedLevels;
+      labels = loadedLabels;
+      this.isSelectedLevel = isSelectedLevel;
+      this.isSelectedLabel = isSelectedLabel;
     });
+  }
+
+  List<String> getLevelsFromEntries(List<Entry> entries) {
+    const levels = ['N5', 'N4', 'N3', 'N2', 'N1'];
+    return
+      entries
+        .map((entry) => entry.labels)
+        .expand((element) => element)
+        .toSet()
+        .where((element) => levels.contains(element))
+        .toList();
+  }
+
+  List<String> getLabelFromEntries(List<Entry> entries) {
+    const levels = ['N5', 'N4', 'N3', 'N2', 'N1'];
+    return
+      entries
+        .map((entry) => entry.labels)
+        .expand((element) => element)
+        .toSet()
+        .where((element) => !levels.contains(element))
+        .toList();
   }
 
   _onStartGame() {
