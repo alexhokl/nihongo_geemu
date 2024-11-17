@@ -7,6 +7,7 @@ ToggleButtons createToggleButtons(List<String> labels, List<bool> isSelected, Fu
   return ToggleButtons(
     isSelected: isSelected,
     borderRadius: BorderRadius.circular(8.0),
+    constraints: BoxConstraints(minWidth: 100.0, minHeight: 50.0),
     onPressed: onPressed,
     children: labels.map((level) => Text(level)).toList(),
   );

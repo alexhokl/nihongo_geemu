@@ -104,6 +104,7 @@ class _QuestionPageState extends State<QuestionPage> {
       return Scaffold(
         appBar: AppBar(
           title: const Text('Congratulations!'),
+          backgroundColor: Theme.of(context).colorScheme.primaryFixedDim,
         ),
         body: const Center(
           child: Column(
@@ -125,28 +126,45 @@ class _QuestionPageState extends State<QuestionPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Question $shownCount / $totalQuestionCount of ${widget.selectedLabel} in ${widget.selectedLevel}'),
+        backgroundColor: Theme.of(context).colorScheme.primaryFixedDim,
       ),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.only(left: 100.0, right: 100.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              Text('English: ${widget.questions[questionIndex].english[0]}'),
-              TextField(
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Kanji or Kana',
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  'English: ${widget.questions[questionIndex].english[0]}',
+                  style: const TextStyle(fontSize: 20),
                 ),
-                onSubmitted: (String value) {
-                  _onComplete();
-                },
-                onChanged: (String value) {
-                  setState(() {
-                    filled = value.isNotEmpty;
-                    widget.questions[questionIndex].answer = value;
-                  });
-                },
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: SizedBox(
+                  width: 300,
+                  child: TextField(
+                    autofocus: true,
+                    autocorrect: false,
+                    enableSuggestions: false,
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'Kanji or Kana',
+                    ),
+                    onSubmitted: (String value) {
+                      _onComplete();
+                    },
+                    onChanged: (String value) {
+                      setState(() {
+                        filled = value.isNotEmpty;
+                        widget.questions[questionIndex].answer = value;
+                      });
+                    },
+                  ),
+                ),
               ),
             ],
           )
