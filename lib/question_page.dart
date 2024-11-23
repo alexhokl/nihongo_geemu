@@ -98,12 +98,20 @@ class _QuestionPageState extends State<QuestionPage> {
     totalQuestionCount = widget.questions.length;
   }
 
+  String _getTitle(int shownCount, int totalQuestionCount, String selectedLabel, String selectedLevel) {
+    if (totalQuestionCount == 0) {
+      return 'Congratulations!';
+    }
+    return 'Question $shownCount / $totalQuestionCount of ${widget.selectedLabel} in ${widget.selectedLevel}';
+  }
+
   @override
   Widget build(BuildContext context) {
+    final title = _getTitle(shownCount, totalQuestionCount, widget.selectedLabel, widget.selectedLevel);
     if (completedAllQuestions) {
       return Scaffold(
         appBar: AppBar(
-          title: const Text('Congratulations!'),
+          title: Text(title),
           backgroundColor: Theme.of(context).colorScheme.primaryFixedDim,
         ),
         body: const Center(
@@ -125,7 +133,7 @@ class _QuestionPageState extends State<QuestionPage> {
     }
     return Scaffold(
       appBar: AppBar(
-        title: Text('Question $shownCount / $totalQuestionCount of ${widget.selectedLabel} in ${widget.selectedLevel}'),
+        title: Text(title),
         backgroundColor: Theme.of(context).colorScheme.primaryFixedDim,
       ),
       body: Center(
