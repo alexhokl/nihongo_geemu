@@ -40,14 +40,12 @@ class GameHomePage extends StatefulWidget {
 }
 
 class _GameHomePageState extends State<GameHomePage> {
-  final List<String> preSelectedLabels = ["Nouns"];
-  final List<String> preSelectedLevels = ['N5'];
   List<Entry> entries = [];
   List<Question> questions = [];
   List<String> labels = [];
-  List<bool> isSelectedLabel = [];
   List<String> levels = [];
-  List<bool> isSelectedLevel = [];
+  String selectedLevel = 'N5';
+  String selectedLabel = 'Nouns';
 
   @override
   void initState() {
@@ -77,14 +75,6 @@ class _GameHomePageState extends State<GameHomePage> {
 
     final loadedLevels = getLevelsFromEntries(loadedEntries);
     final loadedLabels = getLabelFromEntries(loadedEntries);
-    final isSelectedLevel =
-      List.generate(
-        loadedLevels.length,
-        (index) => preSelectedLevels.contains(loadedLevels[index]));
-    final isSelectedLabel =
-      List.generate(
-        loadedLabels.length,
-        (index) => preSelectedLabels.contains(loadedLabels[index]));
 
     setState(() {
       if (localDbMD5Hash == null && !hasWiFi) {
@@ -96,36 +86,36 @@ class _GameHomePageState extends State<GameHomePage> {
       entries = loadedEntries;
       levels = loadedLevels;
       labels = loadedLabels;
-      this.isSelectedLevel = isSelectedLevel;
-      this.isSelectedLabel = isSelectedLabel;
     });
   }
 
   List<String> getLevelsFromEntries(List<Entry> entries) {
     const levels = ['N5', 'N4', 'N3', 'N2', 'N1'];
-    return
+    final list =
       entries
         .map((entry) => entry.labels)
         .expand((element) => element)
         .toSet()
         .where((element) => levels.contains(element))
         .toList();
+
+    return list..sort((a, b) => b.compareTo(a));
   }
 
   List<String> getLabelFromEntries(List<Entry> entries) {
     const levels = ['N5', 'N4', 'N3', 'N2', 'N1'];
-    return
+    final list =
       entries
         .map((entry) => entry.labels)
         .expand((element) => element)
         .toSet()
         .where((element) => !levels.contains(element))
         .toList();
+
+    return list..sort((a, b) => a.compareTo(b));
   }
 
   _onStartGame() {
-    String selectedLabel = labels[isSelectedLabel.indexOf(true)];
-    String selectedLevel = levels[isSelectedLevel.indexOf(true)];
     questions = getEntriesByLabel(entries, [selectedLevel, selectedLabel]).map((entry) => Question(
       kanji: entry.kanji,
       kana: entry.kana,
@@ -178,21 +168,36 @@ class _GameHomePageState extends State<GameHomePage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text('JLPT Level: '),
-                  createToggleButtons(levels, isSelectedLevel, (int index) {
-                    setState(() {
-                      setSelected(isSelectedLevel, index);
-                    });
-                  }),
+                  SegmentedButton(
+                    segments: createButtonSegments(levels),
+                    selected: {selectedLevel},
+                    onSelectionChanged: (Set<String> selected) {
+                      setState(() {
+                        selectedLevel = selected.first;
+                      });
+                    },
+                    multiSelectionEnabled: false,
+                  ),
                 ],
               ),
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: createToggleButtons(labels, isSelectedLabel, (int index) {
-                setState(() {
-                  setSelected(isSelectedLabel, index);
-                });
-              }),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SegmentedButton(
+                    segments: createButtonSegments(labels),
+                    selected: {selectedLabel},
+                    onSelectionChanged: (Set<String> selected) {
+                      setState(() {
+                        selectedLabel = selected.first;
+                      });
+                    },
+                    multiSelectionEnabled: false,
+                  ),
+                ],
+              ),
             ),
           ],
         ),
