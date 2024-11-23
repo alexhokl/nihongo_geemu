@@ -55,28 +55,6 @@ class _GameHomePageState extends State<GameHomePage> {
     _setDatabase();
   }
 
-  // Future<void> _loadLevels() async {
-  //   await Future.delayed(Duration(seconds: 5));
-  //   setState(() {
-  //     levels = ['N5', 'N4', 'N3', 'N2', 'N1'];
-  //     isSelectedLevel =
-  //       List.generate(
-  //         levels.length,
-  //         (index) => preSelectedLevels.contains(levels[index]));
-  //   });
-  // }
-  //
-  // Future<void> _loadLabels() async {
-  //   await Future.delayed(Duration(seconds: 5));
-  //   setState(() {
-  //     labels = ['Nouns', 'Verbs', 'Adjectives', 'Adverbs', 'Expressions', 'Conjunctions'];
-  //     isSelectedLabel =
-  //       List.generate(
-  //         labels.length,
-  //         (index) => preSelectedLabels.contains(labels[index]));
-  //   });
-  // }
-
   Future<void> _setDatabase() async {
     final databaseLocalPath = await getDatabaseLocalPath();
     final localDbMD5Hash = await getMD5HashFromLocalFile(databaseLocalPath);
@@ -90,8 +68,6 @@ class _GameHomePageState extends State<GameHomePage> {
         'japanese_vocab.db');
 
     await _loadEntries(hasDatabaseFile, localDbMD5Hash, hasWiFi);
-    // await _loadLevels();
-    // await _loadLabels();
   }
 
   Future<void> _loadEntries(bool hasDatabaseFile, String? localDbMD5Hash, bool hasWiFi) async {
