@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nihogo_geemu/question.dart';
+import 'package:nihogo_geemu/widgets/button.dart';
 import 'dart:math';
 
 import 'package:nihogo_geemu/widgets/snack_bar.dart';
@@ -178,32 +179,22 @@ class _QuestionPageState extends State<QuestionPage> {
           )
         ),
       ),
-      floatingActionButton: Stack(
-        children: <Widget>[
-          Positioned(
-            right: 16,
-            bottom: 80,
-            child: FloatingActionButton(
-              heroTag: 'next',
-              onPressed: filled ? _onComplete : null,
-              tooltip: 'next question',
-              child: const Icon(Icons.play_arrow),
-            ),
-          ),
-          Positioned(
-            right: 16,
-            bottom: 16,
-            child: FloatingActionButton(
-              heroTag: 'finish',
-              onPressed: () {
-                Navigator.of(context).popUntil((route) => route.isFirst);
-              },
-              tooltip: 'finish',
-              child: const Icon(Icons.stop_rounded),
-            ),
-          ),
-        ],
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      floatingActionButton: getButtonStack([
+        FloatingActionButton(
+          heroTag: 'next',
+          onPressed: filled ? _onComplete : null,
+          tooltip: 'next question',
+          child: const Icon(Icons.play_arrow),
+        ),
+        FloatingActionButton(
+          heroTag: 'finish',
+          onPressed: () {
+            Navigator.of(context).popUntil((route) => route.isFirst);
+          },
+          tooltip: 'finish',
+          child: const Icon(Icons.stop_rounded),
+        ),
+      ]),
     );
   }
 }

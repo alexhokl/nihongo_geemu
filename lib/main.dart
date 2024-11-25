@@ -202,11 +202,13 @@ class _GameHomePageState extends State<GameHomePage> {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _onStartGame,
-        tooltip: 'start game',
-        child: const Icon(Icons.play_arrow),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      floatingActionButton: getButtonStack([
+        FloatingActionButton(
+          onPressed: _onStartGame,
+          tooltip: 'start game',
+          child: const Icon(Icons.play_arrow),
+        ),
+      ]),
     );
   }
 }
