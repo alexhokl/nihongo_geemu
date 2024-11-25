@@ -3,6 +3,7 @@ import 'package:nihogo_geemu/cloud_storage.dart';
 import 'package:nihogo_geemu/data_operations.dart';
 import 'package:nihogo_geemu/database_operation.dart';
 import 'package:nihogo_geemu/entry.dart';
+import 'package:nihogo_geemu/game_state.dart';
 import 'package:nihogo_geemu/local_storage.dart';
 import 'package:nihogo_geemu/question.dart';
 import 'package:nihogo_geemu/question_page.dart';
@@ -40,8 +41,8 @@ class GameHomePage extends StatefulWidget {
 }
 
 class _GameHomePageState extends State<GameHomePage> {
+  static const possibleLevels = ['N5', 'N4', 'N3', 'N2', 'N1'];
   List<Entry> entries = [];
-  List<Question> questions = [];
   List<String> labels = [];
   List<String> levels = [];
   String selectedLevel = 'N5';
@@ -73,8 +74,8 @@ class _GameHomePageState extends State<GameHomePage> {
     final List<Entry> loadedEntries =
       hasDatabaseFile ? await getAllEntries() : [];
 
-    final loadedLevels = getLevelsFromEntries(loadedEntries);
-    final loadedLabels = getLabelFromEntries(loadedEntries);
+    final loadedLevels = getLevelsFromEntries(possibleLevels, loadedEntries);
+    final loadedLabels = getLabelFromEntries(possibleLevels, loadedEntries);
 
     setState(() {
       if (localDbMD5Hash == null && !hasWiFi) {
@@ -89,34 +90,32 @@ class _GameHomePageState extends State<GameHomePage> {
     });
   }
 
-  List<String> getLevelsFromEntries(List<Entry> entries) {
-    const levels = ['N5', 'N4', 'N3', 'N2', 'N1'];
+  List<String> getLevelsFromEntries(List<String> possibleLevels, List<Entry> entries) {
     final list =
       entries
         .map((entry) => entry.labels)
         .expand((element) => element)
         .toSet()
-        .where((element) => levels.contains(element))
+        .where((element) => possibleLevels.contains(element))
         .toList();
 
     return list..sort((a, b) => b.compareTo(a));
   }
 
-  List<String> getLabelFromEntries(List<Entry> entries) {
-    const levels = ['N5', 'N4', 'N3', 'N2', 'N1'];
+  List<String> getLabelFromEntries(List<String>possibleLevels, List<Entry> entries) {
     final list =
       entries
         .map((entry) => entry.labels)
         .expand((element) => element)
         .toSet()
-        .where((element) => !levels.contains(element))
+        .where((element) => !possibleLevels.contains(element))
         .toList();
 
     return list..sort((a, b) => a.compareTo(b));
   }
 
   _onStartGame() {
-    questions = getEntriesByLabel(entries, [selectedLevel, selectedLabel]).map((entry) => Question(
+    List<Question> questions = getEntriesByLabel(entries, [selectedLevel, selectedLabel]).map((entry) => Question(
       kanji: entry.kanji,
       kana: entry.kana,
       english: entry.english,
@@ -126,16 +125,20 @@ class _GameHomePageState extends State<GameHomePage> {
       noQuestionsFoundSnackBar(context);
       return;
     }
-    Navigator.of(context).push(_createRoute(questions, selectedLevel, selectedLabel));
+
+    final gameState = GameState(
+      questions: questions,
+      level: selectedLevel,
+      label: selectedLabel,
+    );
+    Navigator.of(context).push(_createRoute(gameState));
   }
 
-  Route _createRoute(List<Question> questions, String selectedLevel, String selectedLabel) {
+  Route _createRoute(GameState gameState) {
     return PageRouteBuilder(
       pageBuilder: (context, animation, secondaryAnimation) =>
         QuestionPage(
-          questions: questions,
-          selectedLevel: selectedLevel,
-          selectedLabel: selectedLabel
+          gameState: gameState,
         ),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         const begin = Offset(1.0, 0.0);
@@ -153,6 +156,17 @@ class _GameHomePageState extends State<GameHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    if (entries.isEmpty) {
+      return Scaffold(
+        appBar: AppBar(
+          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+          title: Text(widget.title),
+        ),
+        body: const Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,

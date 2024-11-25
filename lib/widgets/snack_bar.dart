@@ -69,3 +69,17 @@ void wrongAnswerSnackBar(BuildContext context) {
         backgroundColor: Colors.amberAccent,
     ));
 }
+
+void actualAnswerSnackBar(BuildContext context, String english, String answer) {
+  ScaffoldMessenger.of(context)
+    ..removeCurrentSnackBar()
+    ..showSnackBar(
+      SnackBar(
+        content: Text(
+          'The correct answer for "$english" is: $answer',
+          style: TextStyle(color: Colors.black),
+        ),
+        backgroundColor: Colors.amberAccent,
+        duration: Duration(seconds: 10),
+    ));
+}

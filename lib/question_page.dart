@@ -1,53 +1,41 @@
 import 'package:flutter/material.dart';
-import 'package:nihogo_geemu/question.dart';
+import 'package:nihogo_geemu/game_state.dart';
 import 'package:nihogo_geemu/widgets/button.dart';
-import 'dart:math';
 
 import 'package:nihogo_geemu/widgets/snack_bar.dart';
 
 class QuestionPage extends StatefulWidget {
   const QuestionPage({
     super.key,
-    required this.questions,
-    required this.selectedLevel,
-    required this.selectedLabel,
+    required this.gameState,
   });
-  final List<Question> questions;
-  final String selectedLevel;
-  final String selectedLabel;
+  final GameState gameState;
 
   @override
   State<QuestionPage> createState() => _QuestionPageState();
 }
 
 class _QuestionPageState extends State<QuestionPage> {
-  int questionIndex = 0;
-  int shownCount = 1;
-  int totalQuestionCount = 0;
   bool filled = false;
-  bool completedAllQuestions = false;
 
-  _onComplete() {
-    final kana = widget.questions[questionIndex].kana.trim();
-    final kanji = widget.questions[questionIndex].kanji.trim();
-    final answer = widget.questions[questionIndex].answer.trim();
-    if (answer == kana || answer == kanji) {
-      widget.questions[questionIndex].correct = true;
+  _onAnswer() {
+    final correct = widget.gameState.isCorrectAnswer();
+    if (correct) {
+      widget.gameState.answeredCorreclty();
+      widget.gameState.next();
       correctAnswerSnackBar(context);
-      Navigator.of(context).push(_createRoute(widget.questions));
+      Navigator.of(context).push(_createRoute(widget.gameState));
       return;
     }
 
     wrongAnswerSnackBar(context);
   }
 
-  Route _createRoute(List<Question> questions) {
+  Route _createRoute(GameState gameState) {
     return PageRouteBuilder(
       pageBuilder: (context, animation, secondaryAnimation) =>
         QuestionPage(
-          questions: questions,
-          selectedLevel: widget.selectedLevel,
-          selectedLabel: widget.selectedLabel
+          gameState: gameState,
         ),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         const begin = Offset(1.0, 0.0);
@@ -63,53 +51,28 @@ class _QuestionPageState extends State<QuestionPage> {
     );
   }
 
-  bool isAllQuestionsAnswered() {
-    return widget.questions.every((q) => q.shown);
-  }
-
-  int getQuestionIndex() {
-    Random random = Random();
-    questionIndex = random.nextInt(widget.questions.length);
-    while (widget.questions[questionIndex].shown) {
-      questionIndex = random.nextInt(widget.questions.length);
-    }
-    return questionIndex;
-  }
-
-  int getShownCount() {
-    shownCount = 0;
-    for (int i = 0; i < widget.questions.length; i++) {
-      if (widget.questions[i].shown) {
-        shownCount++;
-      }
-    }
-    return shownCount;
-  }
-
   @override
   void initState() {
     super.initState();
-    if (isAllQuestionsAnswered()) {
-      completedAllQuestions = true;
-      return;
-    }
-    questionIndex = getQuestionIndex();
-    widget.questions[questionIndex].shown = true;
-    shownCount = getShownCount();
-    totalQuestionCount = widget.questions.length;
+
+    debugPrint('shownCount ${widget.gameState.shownCount()}');
   }
 
-  String _getTitle(int shownCount, int totalQuestionCount, String selectedLabel, String selectedLevel) {
-    if (totalQuestionCount == 0) {
+  String _getTitle(GameState gameState) {
+    if (gameState.completedAllQuestions()) {
       return 'Congratulations!';
     }
-    return 'Question $shownCount / $totalQuestionCount of ${widget.selectedLabel} in ${widget.selectedLevel}';
+    final currentCount = gameState.shownCount();
+    final totalCount = gameState.totalQuestionCount();
+    final label = gameState.label;
+    final level = gameState.level;
+    return 'Question $currentCount / $totalCount of $label in $level';
   }
 
   @override
   Widget build(BuildContext context) {
-    final title = _getTitle(shownCount, totalQuestionCount, widget.selectedLabel, widget.selectedLevel);
-    if (completedAllQuestions) {
+    final title = _getTitle(widget.gameState);
+    if (widget.gameState.completedAllQuestions()) {
       return Scaffold(
         appBar: AppBar(
           title: Text(title),
@@ -147,7 +110,7 @@ class _QuestionPageState extends State<QuestionPage> {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
-                  'English: ${widget.questions[questionIndex].english[0]}',
+                  'English: ${widget.gameState.firstEnglish()}',
                   style: const TextStyle(fontSize: 20),
                 ),
               ),
@@ -164,12 +127,12 @@ class _QuestionPageState extends State<QuestionPage> {
                       labelText: 'Kanji or Kana',
                     ),
                     onSubmitted: (String value) {
-                      _onComplete();
+                      _onAnswer();
                     },
                     onChanged: (String value) {
                       setState(() {
-                        filled = value.isNotEmpty;
-                        widget.questions[questionIndex].answer = value;
+                        widget.gameState.updateUserAnswer(value);
+                        filled = widget.gameState.filled();
                       });
                     },
                   ),
@@ -182,9 +145,21 @@ class _QuestionPageState extends State<QuestionPage> {
       floatingActionButton: getButtonStack([
         FloatingActionButton(
           heroTag: 'next',
-          onPressed: filled ? _onComplete : null,
-          tooltip: 'next question',
+          onPressed: filled ? _onAnswer : null,
+          tooltip: 'confirm my answer',
           child: const Icon(Icons.play_arrow),
+        ),
+        FloatingActionButton(
+          heroTag: 'skip',
+          onPressed: () {
+            final actualAnswer = widget.gameState.answerForDisplay();
+            actualAnswerSnackBar(context, widget.gameState.firstEnglish(), actualAnswer);
+            widget.gameState.skip();
+            widget.gameState.next();
+            Navigator.of(context).push(_createRoute(widget.gameState));
+          },
+          tooltip: "I don't know",
+          child: const Icon(Icons.question_mark),
         ),
         FloatingActionButton(
           heroTag: 'finish',
@@ -192,7 +167,7 @@ class _QuestionPageState extends State<QuestionPage> {
             Navigator.of(context).popUntil((route) => route.isFirst);
           },
           tooltip: 'finish',
-          child: const Icon(Icons.stop_rounded),
+          child: const Icon(Icons.home),
         ),
       ]),
     );

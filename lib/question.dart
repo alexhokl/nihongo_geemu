@@ -1,7 +1,7 @@
 import 'package:nihogo_geemu/entry.dart';
 
 class Question extends Entry {
-  String answer = "";
+  String userInput = "";
   bool correct = false;
   bool shown = false;
 
