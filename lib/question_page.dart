@@ -102,7 +102,7 @@ class _QuestionPageState extends State<QuestionPage> {
                   child: TextField(
                     autofocus: true,
                     autocorrect: false,
-                    enableSuggestions: false,
+                    // enableSuggestions: false,
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),
                       labelText: 'Kanji or Kana',
