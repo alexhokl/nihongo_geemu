@@ -6,9 +6,9 @@ import 'package:nihogo_geemu/entry.dart';
 import 'package:nihogo_geemu/game_state.dart';
 import 'package:nihogo_geemu/local_storage.dart';
 import 'package:nihogo_geemu/question.dart';
-import 'package:nihogo_geemu/question_page.dart';
 import 'package:nihogo_geemu/theme.dart';
 import 'package:nihogo_geemu/widgets/button.dart';
+import 'package:nihogo_geemu/widgets/route.dart';
 import 'package:nihogo_geemu/widgets/snack_bar.dart';
 
 void main() {
@@ -70,7 +70,6 @@ class _GameHomePageState extends State<GameHomePage> {
   }
 
   Future<void> _loadEntries(bool hasDatabaseFile, String? localDbMD5Hash, bool hasWiFi) async {
-    final hasWiFi = await hasConnection();
     final List<Entry> loadedEntries =
       hasDatabaseFile ? await getAllEntries() : [];
 
@@ -131,27 +130,7 @@ class _GameHomePageState extends State<GameHomePage> {
       level: selectedLevel,
       label: selectedLabel,
     );
-    Navigator.of(context).push(_createRoute(gameState));
-  }
-
-  Route _createRoute(GameState gameState) {
-    return PageRouteBuilder(
-      pageBuilder: (context, animation, secondaryAnimation) =>
-        QuestionPage(
-          gameState: gameState,
-        ),
-      transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        const begin = Offset(1.0, 0.0);
-        const end = Offset.zero;
-        const curve = Curves.ease;
-        var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-        var offsetAnimation = animation.drive(tween);
-        return SlideTransition(
-          position: offsetAnimation,
-          child: child,
-        );
-      },
-    );
+    Navigator.of(context).push(createRoute(gameState));
   }
 
   @override

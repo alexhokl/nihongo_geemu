@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nihogo_geemu/game_state.dart';
 import 'package:nihogo_geemu/widgets/button.dart';
+import 'package:nihogo_geemu/widgets/route.dart';
 
 import 'package:nihogo_geemu/widgets/snack_bar.dart';
 
@@ -24,31 +25,11 @@ class _QuestionPageState extends State<QuestionPage> {
       widget.gameState.answeredCorreclty();
       widget.gameState.next();
       correctAnswerSnackBar(context);
-      Navigator.of(context).push(_createRoute(widget.gameState));
+      Navigator.of(context).push(createRoute(widget.gameState));
       return;
     }
 
     wrongAnswerSnackBar(context);
-  }
-
-  Route _createRoute(GameState gameState) {
-    return PageRouteBuilder(
-      pageBuilder: (context, animation, secondaryAnimation) =>
-        QuestionPage(
-          gameState: gameState,
-        ),
-      transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        const begin = Offset(1.0, 0.0);
-        const end = Offset.zero;
-        const curve = Curves.ease;
-        var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-        var offsetAnimation = animation.drive(tween);
-        return SlideTransition(
-          position: offsetAnimation,
-          child: child,
-        );
-      },
-    );
   }
 
   @override
@@ -156,7 +137,7 @@ class _QuestionPageState extends State<QuestionPage> {
             actualAnswerSnackBar(context, widget.gameState.firstEnglish(), actualAnswer);
             widget.gameState.skip();
             widget.gameState.next();
-            Navigator.of(context).push(_createRoute(widget.gameState));
+            Navigator.of(context).push(createRoute(widget.gameState));
           },
           tooltip: "I don't know",
           child: const Icon(Icons.question_mark),
