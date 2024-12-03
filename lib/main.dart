@@ -179,15 +179,17 @@ class _GameHomePageState extends State<GameHomePage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  SegmentedButton(
-                    segments: createButtonSegments(labels),
-                    selected: {selectedLabel},
-                    onSelectionChanged: (Set<String> selected) {
-                      setState(() {
-                        selectedLabel = selected.first;
-                      });
-                    },
-                    multiSelectionEnabled: false,
+                  Expanded(
+                    child: SegmentedButton(
+                      segments: createButtonSegments(labels),
+                      selected: {selectedLabel},
+                      onSelectionChanged: (Set<String> selected) {
+                        setState(() {
+                          selectedLabel = selected.first;
+                        });
+                      },
+                      multiSelectionEnabled: false,
+                    ),
                   ),
                 ],
               ),
