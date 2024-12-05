@@ -65,22 +65,12 @@ class _QuestionPageState extends State<QuestionPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              RichText(
-                text: TextSpan(
-                  children: [
-                    TextSpan(
-                      text: 'Correct: ${widget.gameState.correctCount()}',
-                      style: TextStyle(color: Colors.green, fontSize: statusFontSize),
-                    ),
-                    const TextSpan(text: ' | '),
-                    TextSpan(
-                      text: 'Incorrect: ${widget.gameState.incorrectCount()}',
-                      style: TextStyle(color: Colors.red, fontSize: statusFontSize),
-                    ),
-                  ],
-                ),
+              getStatusLine(widget.gameState, statusFontSize),
+              const Text('You have completed all questions!'),
+              SizedBox(
+                height: 500,
+                child: getIncorrectAnswers(widget.gameState),
               ),
-              Text('You have completed all questions!'),
             ],
           ),
         ),
@@ -101,21 +91,7 @@ class _QuestionPageState extends State<QuestionPage> {
       ),
       body: Column(
         children: [
-          RichText(
-            text: TextSpan(
-              children: [
-                TextSpan(
-                  text: 'Correct: ${widget.gameState.correctCount()}',
-                  style: TextStyle(color: Colors.green, fontSize: statusFontSize),
-                ),
-                const TextSpan(text: ' | '),
-                TextSpan(
-                  text: 'Incorrect: ${widget.gameState.incorrectCount()}',
-                  style: TextStyle(color: Colors.red, fontSize: statusFontSize),
-                ),
-              ],
-            ),
-          ),
+          getStatusLine(widget.gameState, statusFontSize),
           Center(
             child: Padding(
               padding: const EdgeInsets.only(left: 100.0, right: 100.0, top: 200.0),
@@ -188,6 +164,42 @@ class _QuestionPageState extends State<QuestionPage> {
           child: const Icon(Icons.home),
         ),
       ]),
+    );
+  }
+
+  RichText getStatusLine(GameState gameState, double statusFontSize) {
+    return RichText(
+      text: TextSpan(
+        children: [
+          TextSpan(
+            text: 'Correct: ${gameState.correctCount()}',
+            style: TextStyle(color: Colors.green, fontSize: statusFontSize),
+          ),
+          const TextSpan(text: ' | '),
+          TextSpan(
+            text: 'Incorrect: ${gameState.incorrectCount()}',
+            style: TextStyle(color: Colors.red, fontSize: statusFontSize),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget getIncorrectAnswers(GameState gameState) {
+    if (gameState.incorrectCount() == 0) {
+      return const Text('You got it all correct!');
+    }
+
+    final incorrectAnsweredQuestions = gameState.incorrectAnsweredQuestions();
+    final List<ListTile> tiles = incorrectAnsweredQuestions.map((question) {
+      return ListTile(
+        tileColor: Theme.of(context).colorScheme.errorContainer,
+        title: Center(child: Text('${question.english.first} - ${question.kanji} (${question.kana})')),
+      );
+    }).toList();
+
+    return ListView(
+      children: tiles,
     );
   }
 }

@@ -95,11 +95,15 @@ class GameState {
 
   }
 
-  correctCount() {
+  int correctCount() {
     return questions.where((element) => element.correct && element.answered).length;
   }
 
-  incorrectCount() {
+  int incorrectCount() {
     return questions.where((element) => !element.correct && element.answered).length;
+  }
+
+  List<Question> incorrectAnsweredQuestions() {
+    return questions.where((element) => !element.correct && element.answered).toList();
   }
 }
