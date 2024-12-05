@@ -176,23 +176,7 @@ class _GameHomePageState extends State<GameHomePage> {
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Expanded(
-                    child: SegmentedButton(
-                      segments: createButtonSegments(labels),
-                      selected: {selectedLabel},
-                      onSelectionChanged: (Set<String> selected) {
-                        setState(() {
-                          selectedLabel = selected.first;
-                        });
-                      },
-                      multiSelectionEnabled: false,
-                    ),
-                  ),
-                ],
-              ),
+              child: getLabelDropdownButton(labels),
             ),
           ],
         ),
@@ -204,6 +188,23 @@ class _GameHomePageState extends State<GameHomePage> {
           child: const Icon(Icons.play_arrow),
         ),
       ]),
+    );
+  }
+
+  DropdownButton<String> getLabelDropdownButton(List<String> labels) {
+    return DropdownButton<String>(
+      value: selectedLabel,
+      onChanged: (String? newValue) {
+        setState(() {
+          selectedLabel = newValue!;
+        });
+      },
+      items: labels.map<DropdownMenuItem<String>>((String value) {
+        return DropdownMenuItem<String>(
+          value: value,
+          child: Text(value),
+        );
+      }).toList(),
     );
   }
 }
