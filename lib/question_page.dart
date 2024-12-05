@@ -37,6 +37,7 @@ class _QuestionPageState extends State<QuestionPage> {
     super.initState();
 
     debugPrint('shownCount ${widget.gameState.shownCount()}');
+    debugPrint('totalQuestionCount ${widget.gameState.totalQuestionCount()}');
   }
 
   String _getTitle(GameState gameState) {

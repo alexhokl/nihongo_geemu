@@ -22,6 +22,12 @@ class GameState {
 
   void answeredCorreclty() {
     questions[questionIndex].correct = true;
+    questions[questionIndex].answered = true;
+  }
+
+  void skip() {
+    questions[questionIndex].correct = false;
+    questions[questionIndex].answered = true;
   }
 
   bool next() {
@@ -39,10 +45,6 @@ class GameState {
 
   int totalQuestionCount() {
     return questions.length;
-  }
-
-  void skip() {
-    questions[questionIndex].correct = false;
   }
 
   void updateUserAnswer(String userInput) {
@@ -77,7 +79,7 @@ class GameState {
   }
 
   bool completedAllQuestions() {
-    return questions.every((element) => element.shown);
+    return questions.every((element) => element.answered);
   }
 
   int _nextQuesitonIndex() {

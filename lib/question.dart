@@ -4,6 +4,7 @@ class Question extends Entry {
   String userInput = "";
   bool correct = false;
   bool shown = false;
+  bool answered = false;
 
   Question({
     required super.kanji,
