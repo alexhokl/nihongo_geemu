@@ -54,16 +54,32 @@ class _QuestionPageState extends State<QuestionPage> {
   @override
   Widget build(BuildContext context) {
     final title = _getTitle(widget.gameState);
+    final statusFontSize = Theme.of(context).textTheme.headlineSmall?.fontSize ?? 20;
     if (widget.gameState.completedAllQuestions()) {
       return Scaffold(
         appBar: AppBar(
           title: Text(title),
           backgroundColor: Theme.of(context).colorScheme.primaryFixedDim,
         ),
-        body: const Center(
+        body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
+              RichText(
+                text: TextSpan(
+                  children: [
+                    TextSpan(
+                      text: 'Correct: ${widget.gameState.correctCount()}',
+                      style: TextStyle(color: Colors.green, fontSize: statusFontSize),
+                    ),
+                    const TextSpan(text: ' | '),
+                    TextSpan(
+                      text: 'Incorrect: ${widget.gameState.incorrectCount()}',
+                      style: TextStyle(color: Colors.red, fontSize: statusFontSize),
+                    ),
+                  ],
+                ),
+              ),
               Text('You have completed all questions!'),
             ],
           ),
@@ -77,52 +93,72 @@ class _QuestionPageState extends State<QuestionPage> {
         ),
       );
     }
+
     return Scaffold(
       appBar: AppBar(
         title: Text(title),
         backgroundColor: Theme.of(context).colorScheme.primaryFixedDim,
       ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.only(left: 100.0, right: 100.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  'English: ${widget.gameState.firstEnglish()}',
-                  style: const TextStyle(fontSize: 20),
+      body: Column(
+        children: [
+          RichText(
+            text: TextSpan(
+              children: [
+                TextSpan(
+                  text: 'Correct: ${widget.gameState.correctCount()}',
+                  style: TextStyle(color: Colors.green, fontSize: statusFontSize),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: SizedBox(
-                  width: 300,
-                  child: TextField(
-                    autofocus: true,
-                    autocorrect: false,
-                    // enableSuggestions: false,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'Kanji or Kana',
+                const TextSpan(text: ' | '),
+                TextSpan(
+                  text: 'Incorrect: ${widget.gameState.incorrectCount()}',
+                  style: TextStyle(color: Colors.red, fontSize: statusFontSize),
+                ),
+              ],
+            ),
+          ),
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.only(left: 100.0, right: 100.0, top: 200.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      'English: ${widget.gameState.firstEnglish()}',
+                      style: const TextStyle(fontSize: 20),
                     ),
-                    onSubmitted: (String value) {
-                      _onAnswer();
-                    },
-                    onChanged: (String value) {
-                      setState(() {
-                        widget.gameState.updateUserAnswer(value);
-                        filled = widget.gameState.filled();
-                      });
-                    },
                   ),
-                ),
-              ),
-            ],
-          )
-        ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: SizedBox(
+                      width: 300,
+                      child: TextField(
+                        autofocus: true,
+                        autocorrect: false,
+                        // enableSuggestions: false,
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: 'Kanji or Kana',
+                        ),
+                        onSubmitted: (String value) {
+                          _onAnswer();
+                        },
+                        onChanged: (String value) {
+                          setState(() {
+                            widget.gameState.updateUserAnswer(value);
+                            filled = widget.gameState.filled();
+                          });
+                        },
+                      ),
+                    ),
+                  ),
+                ],
+              )
+            ),
+          ),
+        ],
       ),
       floatingActionButton: getButtonStack([
         FloatingActionButton(

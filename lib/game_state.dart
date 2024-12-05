@@ -94,4 +94,12 @@ class GameState {
     return questionIndex;
 
   }
+
+  correctCount() {
+    return questions.where((element) => element.correct && element.answered).length;
+  }
+
+  incorrectCount() {
+    return questions.where((element) => !element.correct && element.answered).length;
+  }
 }
