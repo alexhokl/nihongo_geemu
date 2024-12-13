@@ -25,7 +25,7 @@ class _QuestionPageState extends State<QuestionPage> {
       widget.gameState.answeredCorreclty();
       widget.gameState.next();
       correctAnswerSnackBar(context);
-      Navigator.of(context).push(createRoute(widget.gameState));
+      Navigator.of(context).pushReplacement(createRoute(widget.gameState));
       return;
     }
 
