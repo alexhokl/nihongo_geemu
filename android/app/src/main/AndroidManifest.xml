@@ -2,7 +2,7 @@
     <application
         android:label="nihogo_geemu"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/nihongo_geemu_icon">
         <activity
             android:name=".MainActivity"
             android:exported="true"
