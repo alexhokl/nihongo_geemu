@@ -41,7 +41,7 @@ class GameHomePage extends StatefulWidget {
 }
 
 class _GameHomePageState extends State<GameHomePage> {
-  static const possibleLevels = ['N5', 'N4', 'N3', 'N2', 'N1'];
+  static const possibleLevels = ['N5', 'N4', 'N3', 'N2', 'N1', 'N0'];
   List<Entry> entries = [];
   List<String> labels = [];
   List<String> levels = [];
