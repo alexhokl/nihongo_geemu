@@ -1,7 +1,6 @@
-version: '3'
+version: "3"
 
 tasks:
-
   build:
     desc: Build
     cmds:
@@ -33,7 +32,7 @@ tasks:
     desc: Generate HTML of coverage and open in browser
     preconditions:
       - test -f coverage/lcov.info
-      - sh: "[ ! -z \"$(which genhtml)\" ]"
+      - sh: '[ ! -z "$(which genhtml)" ]'
     cmds:
       - genhtml coverage/lcov.info -o coverage/html
       - open coverage/html/index.html
@@ -45,3 +44,8 @@ tasks:
   lint-fix:
     desc: Lint Fix
     cmd: dart fix --apply
+
+  copy-apk-to-desktop:
+    desc: Copy APK to Desktop
+    platforms: [darwin]
+    cmd: cp build/macos/Build/Products/Release/nihogo_geemu.app ~/Desktop/nihongo_geemu.apk
