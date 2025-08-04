@@ -18,4 +18,4 @@ markdown](https://github.com/alexhokl/notes/blob/master/spoken_languages/japanes
 
 ## Download APK for Android
 
-- [nihongo_geemu.apk](https://storage.googleapis.com/alexhokl_public/nihongo_geemu--release.apk)
+- [nihongo_geemu.apk](https://storage.googleapis.com/alexhokl_public/nihongo_geemu.apk)
