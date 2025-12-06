@@ -155,19 +155,48 @@ class _GameHomePageState extends State<GameHomePage> {
           children: <Widget>[
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+              child: Column(
                 children: [
-                  Text('JLPT Level: '),
-                  SegmentedButton(
-                    segments: createButtonSegments(levels),
-                    selected: {selectedLevel},
-                    onSelectionChanged: (Set<String> selected) {
-                      setState(() {
-                        selectedLevel = selected.first;
-                      });
-                    },
-                    multiSelectionEnabled: false,
+                  Text('JLPT Level'),
+                  const SizedBox(height: 8.0),
+                  Wrap(
+                    spacing: 8.0,
+                    runSpacing: 8.0,
+                    alignment: WrapAlignment.center,
+                    children: levels
+                        .sublist(0, (levels.length / 2).ceil())
+                        .map((level) => ChoiceChip(
+                              label: Text(level),
+                              selected: selectedLevel == level,
+                              onSelected: (bool selected) {
+                                if (selected) {
+                                  setState(() {
+                                    selectedLevel = level;
+                                  });
+                                }
+                              },
+                            ))
+                        .toList(),
+                  ),
+                  const SizedBox(height: 8.0),
+                  Wrap(
+                    spacing: 8.0,
+                    runSpacing: 8.0,
+                    alignment: WrapAlignment.center,
+                    children: levels
+                        .sublist((levels.length / 2).ceil())
+                        .map((level) => ChoiceChip(
+                              label: Text(level),
+                              selected: selectedLevel == level,
+                              onSelected: (bool selected) {
+                                if (selected) {
+                                  setState(() {
+                                    selectedLevel = level;
+                                  });
+                                }
+                              },
+                            ))
+                        .toList(),
                   ),
                 ],
               ),
