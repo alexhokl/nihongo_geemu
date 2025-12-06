@@ -48,4 +48,4 @@ tasks:
   copy-apk-to-desktop:
     desc: Copy APK to Desktop
     platforms: [darwin]
-    cmd: cp build/macos/Build/Products/Release/nihogo_geemu.app ~/Desktop/nihongo_geemu.apk
+    cmd: cp build/app/outputs/flutter-apk/app-release.apk ~/Desktop/nihongo_geemu.apk
