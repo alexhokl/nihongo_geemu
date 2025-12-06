@@ -46,7 +46,7 @@ class _GameHomePageState extends State<GameHomePage> {
   List<String> labels = [];
   List<String> levels = [];
   String selectedLevel = 'N5';
-  String selectedLabel = 'Nouns';
+  String selectedLabel = 'nouns';
 
   @override
   void initState() {
@@ -79,8 +79,7 @@ class _GameHomePageState extends State<GameHomePage> {
     setState(() {
       if (localDbMD5Hash == null && !hasWiFi) {
         noInternetConnectinoSnackBar(context);
-      }
-      else if (!hasWiFi) {
+      } else if (!hasWiFi) {
         workingOfflineSnackBar(context);
       }
       entries = loadedEntries;
@@ -101,16 +100,15 @@ class _GameHomePageState extends State<GameHomePage> {
     return list..sort((a, b) => b.compareTo(a));
   }
 
-  List<String> getLabelFromEntries(List<String>possibleLevels, List<Entry> entries) {
-    final list =
+  List<String> getLabelFromEntries(List<String> possibleLevels, List<Entry> entries) {
+    return
       entries
         .map((entry) => entry.labels)
         .expand((element) => element)
-        .toSet()
         .where((element) => !possibleLevels.contains(element))
-        .toList();
-
-    return list..sort((a, b) => a.compareTo(b));
+        .toSet()
+        .toList()
+      ..sort();
   }
 
   _onStartGame() {
