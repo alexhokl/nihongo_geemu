@@ -117,6 +117,7 @@ class _GameHomePageState extends State<GameHomePage> {
       kana: entry.kana,
       english: entry.english,
       labels: entry.labels,
+      linkedKanji: entry.linkedKanji,
     )).toList();
     if (questions.isEmpty) {
       noQuestionsFoundSnackBar(context);

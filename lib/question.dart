@@ -11,5 +11,6 @@ class Question extends Entry {
     required super.kana,
     required super.english,
     required super.labels,
+    required super.linkedKanji,
   });
 }

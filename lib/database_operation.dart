@@ -18,6 +18,7 @@ Future<List<Entry>> getAllEntries() async {
       kana: maps[i]['kana'],
       english: _parseArrayInJson(maps[i]['english']),
       labels: _parseArrayInJson(maps[i]['labels']),
+      linkedKanji: maps[i]['linked_kanji'],
     );
   });
 }
