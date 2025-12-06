@@ -32,3 +32,6 @@ coverage/
 
 # IntelliJ IDEA
 .idea/
+
+# Android Gradle build staging folder for C/C++ (NDK) builds
+android/app/.cxx/
