@@ -54,7 +54,8 @@ class _QuestionPageState extends State<QuestionPage> {
   @override
   Widget build(BuildContext context) {
     final title = _getTitle(widget.gameState);
-    final statusFontSize = Theme.of(context).textTheme.headlineSmall?.fontSize ?? 20;
+    final statusFontSize =
+        Theme.of(context).textTheme.headlineSmall?.fontSize ?? 20;
     if (widget.gameState.completedAllQuestions()) {
       return Scaffold(
         appBar: AppBar(
@@ -84,6 +85,8 @@ class _QuestionPageState extends State<QuestionPage> {
       );
     }
 
+    final hasSubEntry = widget.gameState.currentSubEntry() != null;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(title),
@@ -94,45 +97,76 @@ class _QuestionPageState extends State<QuestionPage> {
           getStatusLine(widget.gameState, statusFontSize),
           Center(
             child: Padding(
-              padding: const EdgeInsets.only(left: 100.0, right: 100.0, top: 200.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      'English: ${widget.gameState.firstEnglish()}',
-                      style: const TextStyle(fontSize: 20),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: SizedBox(
-                      width: 300,
-                      child: TextField(
-                        autofocus: true,
-                        autocorrect: false,
-                        // enableSuggestions: false,
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'Kanji or Kana',
-                        ),
-                        onSubmitted: (String value) {
-                          _onAnswer();
-                        },
-                        onChanged: (String value) {
-                          setState(() {
-                            widget.gameState.updateUserAnswer(value);
-                            filled = widget.gameState.filled();
-                          });
-                        },
+                padding: const EdgeInsets.only(
+                    left: 100.0, right: 100.0, top: 200.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        'English: ${widget.gameState.firstEnglish()}',
+                        style: const TextStyle(fontSize: 20),
                       ),
                     ),
-                  ),
-                ],
-              )
-            ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: SizedBox(
+                        width: 300,
+                        child: TextField(
+                          autofocus: true,
+                          autocorrect: false,
+                          // enableSuggestions: false,
+                          decoration: InputDecoration(
+                            border: OutlineInputBorder(),
+                            labelText: hasSubEntry ? 'Kanji or Kana of intransitive verb' : 'Kanji or Kana',
+                          ),
+                          onSubmitted: (String value) {
+                            _onAnswer();
+                          },
+                          onChanged: (String value) {
+                            setState(() {
+                              widget.gameState.updateUserAnswer(value);
+                              filled = widget.gameState.filled();
+                            });
+                          },
+                        ),
+                      ),
+                    ),
+                    if (hasSubEntry) ...[
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          'English: ${widget.gameState.subEntryEnglish()}',
+                          style: const TextStyle(fontSize: 20),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: SizedBox(
+                          width: 300,
+                          child: TextField(
+                            autocorrect: false,
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'Kanji or Kana of transitive verb',
+                            ),
+                            onSubmitted: (String value) {
+                              _onAnswer();
+                            },
+                            onChanged: (String value) {
+                              setState(() {
+                                widget.gameState.updateSubUserAnswer(value);
+                                filled = widget.gameState.filled();
+                              });
+                            },
+                          ),
+                        ),
+                      ),
+                    ],
+                  ],
+                )),
           ),
         ],
       ),
@@ -147,7 +181,8 @@ class _QuestionPageState extends State<QuestionPage> {
           heroTag: 'skip',
           onPressed: () {
             final actualAnswer = widget.gameState.answerForDisplay();
-            actualAnswerSnackBar(context, widget.gameState.firstEnglish(), actualAnswer);
+            actualAnswerSnackBar(
+                context, widget.gameState.firstEnglish(), actualAnswer);
             widget.gameState.skip();
             widget.gameState.next();
             Navigator.of(context).push(createRoute(widget.gameState));
@@ -194,7 +229,9 @@ class _QuestionPageState extends State<QuestionPage> {
     final List<ListTile> tiles = incorrectAnsweredQuestions.map((question) {
       return ListTile(
         tileColor: Theme.of(context).colorScheme.errorContainer,
-        title: Center(child: Text('${question.english.first} - ${question.kanji} (${question.kana})')),
+        title: Center(
+            child: Text(
+                '${question.english.first} - ${question.kanji} (${question.kana})')),
       );
     }).toList();
 

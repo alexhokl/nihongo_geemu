@@ -1,11 +1,14 @@
 import 'dart:math';
 
+import 'package:nihogo_geemu/entry.dart';
 import 'package:nihogo_geemu/question.dart';
 
 class GameState {
   List<Question> questions;
   String level;
   String label;
+  String subUserInput = "";
+
   late int questionIndex;
 
   GameState({
@@ -51,20 +54,71 @@ class GameState {
     questions[questionIndex].userInput = userInput.trim();
   }
 
+  void updateSubUserAnswer(String userInput) {
+    subUserInput = userInput.trim();
+  }
+
   bool filled() {
-    return questions[questionIndex].userInput.isNotEmpty;
+    final mainFilled = questions[questionIndex].userInput.isNotEmpty;
+    final subEntry = questions[questionIndex].subEntry;
+    if (subEntry != null) {
+      return mainFilled && subUserInput.isNotEmpty;
+    }
+    return mainFilled;
   }
 
   bool isCorrectAnswer() {
     final kana = questions[questionIndex].kana.trim();
     final kanji = questions[questionIndex].kanji.trim();
     final userAnswer = questions[questionIndex].userInput;
-    return userAnswer == kana || userAnswer == kanji;
+    final mainCorrect = userAnswer == kana || userAnswer == kanji;
+
+    final subEntry = questions[questionIndex].subEntry;
+    if (subEntry != null) {
+      final subKana = subEntry.kana.trim();
+      final subKanji = subEntry.kanji.trim();
+      final subCorrect = subUserInput == subKana || subUserInput == subKanji;
+      return mainCorrect && subCorrect;
+    }
+    return mainCorrect;
+  }
+
+  Entry? currentSubEntry() {
+    return questions[questionIndex].subEntry;
+  }
+
+  String? subEntryEnglish() {
+    return questions[questionIndex].subEntry?.english.first;
   }
 
   String answerForDisplay() {
+    final main = answerFOrMainEntryDisplay();
+    if (currentSubEntry() != null) {
+      final sub = answerForSubEntryDisplay();
+      return '$main / $sub';
+    }
+    return main;
+  }
+
+  String answerFOrMainEntryDisplay() {
     final kana = questions[questionIndex].kana.trim();
     final kanji = questions[questionIndex].kanji.trim();
+    if (kana.isNotEmpty && kanji.isNotEmpty) {
+      return '$kanji ($kana)';
+    }
+    if (kanji.isNotEmpty) {
+      return kanji;
+    }
+    return kana;
+  }
+
+  String answerForSubEntryDisplay() {
+    final subEntry = questions[questionIndex].subEntry;
+    if (subEntry == null) {
+      return '';
+    }
+    final kana = subEntry.kana.trim();
+    final kanji = subEntry.kanji.trim();
     if (kana.isNotEmpty && kanji.isNotEmpty) {
       return '$kanji ($kana)';
     }
@@ -92,18 +146,23 @@ class GameState {
       questionIndex = random.nextInt(questions.length);
     }
     return questionIndex;
-
   }
 
   int correctCount() {
-    return questions.where((element) => element.correct && element.answered).length;
+    return questions
+        .where((element) => element.correct && element.answered)
+        .length;
   }
 
   int incorrectCount() {
-    return questions.where((element) => !element.correct && element.answered).length;
+    return questions
+        .where((element) => !element.correct && element.answered)
+        .length;
   }
 
   List<Question> incorrectAnsweredQuestions() {
-    return questions.where((element) => !element.correct && element.answered).toList();
+    return questions
+        .where((element) => !element.correct && element.answered)
+        .toList();
   }
 }
