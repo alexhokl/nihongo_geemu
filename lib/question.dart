@@ -6,6 +6,9 @@ class Question extends Entry {
   bool shown = false;
   bool answered = false;
 
+  // optional sub entry for verb pairs
+  Entry? subEntry;
+
   Question({
     required super.kanji,
     required super.kana,

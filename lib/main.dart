@@ -112,13 +112,16 @@ class _GameHomePageState extends State<GameHomePage> {
   }
 
   _onStartGame() {
-    List<Question> questions = getEntriesByLabel(entries, [selectedLevel, selectedLabel]).map((entry) => Question(
-      kanji: entry.kanji,
-      kana: entry.kana,
-      english: entry.english,
-      labels: entry.labels,
-      linkedKanji: entry.linkedKanji,
-    )).toList();
+    final questions =
+      selectedLabel == 'verb pairs'
+      ? getQuestionsByVerbPairs(entries, selectedLevel)
+      : getEntriesByLabel(entries, [selectedLevel, selectedLabel]).map((entry) => Question(
+          kanji: entry.kanji,
+          kana: entry.kana,
+          english: entry.english,
+          labels: entry.labels,
+          linkedKanji: entry.linkedKanji,
+        )).toList();
     if (questions.isEmpty) {
       noQuestionsFoundSnackBar(context);
       return;
