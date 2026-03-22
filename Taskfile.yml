@@ -9,11 +9,11 @@ tasks:
 
   mac:
     desc: Build MacOS
-    cmd: flutter build macos
+    cmd: flutter build macos --dart-define=GIT_COMMIT=$(git rev-parse --short HEAD)
 
   apk:
     desc: Build APK
-    cmd: flutter build apk
+    cmd: flutter build apk --dart-define=GIT_COMMIT=$(git rev-parse --short HEAD)
 
   run:
     desc: Run on MacOS
@@ -22,7 +22,7 @@ tasks:
 
   run-android:
     desc: Run on Android
-    cmd: flutter devices --machine | jq -r '.[] | select(.targetPlatform | contains("android")) | .id' | head -n 1 | xargs flutter run -d
+    cmd: flutter devices --machine | jq -r '.[] | select(.targetPlatform | contains("android")) | .id' | head -n 1 | xargs flutter run -d --dart-define=GIT_COMMIT=$(git rev-parse --short HEAD)
 
   test:
     desc: Test

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nihogo_geemu/app_config.dart';
 import 'package:nihogo_geemu/cloud_storage.dart';
 import 'package:nihogo_geemu/data_operations.dart';
 import 'package:nihogo_geemu/database_operation.dart';
@@ -153,64 +154,81 @@ class _GameHomePageState extends State<GameHomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                children: [
-                  Text('JLPT Level'),
-                  const SizedBox(height: 8.0),
-                  Wrap(
-                    spacing: 8.0,
-                    runSpacing: 8.0,
-                    alignment: WrapAlignment.center,
-                    children: levels
-                        .sublist(0, (levels.length / 2).ceil())
-                        .map((level) => ChoiceChip(
-                              label: Text(level),
-                              selected: selectedLevel == level,
-                              onSelected: (bool selected) {
-                                if (selected) {
-                                  setState(() {
-                                    selectedLevel = level;
-                                  });
-                                }
-                              },
-                            ))
-                        .toList(),
+      body: Stack(
+        children: [
+          Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    children: [
+                      Text('JLPT Level'),
+                      const SizedBox(height: 8.0),
+                      Wrap(
+                        spacing: 8.0,
+                        runSpacing: 8.0,
+                        alignment: WrapAlignment.center,
+                        children: levels
+                            .sublist(0, (levels.length / 2).ceil())
+                            .map((level) => ChoiceChip(
+                                  label: Text(level),
+                                  selected: selectedLevel == level,
+                                  onSelected: (bool selected) {
+                                    if (selected) {
+                                      setState(() {
+                                        selectedLevel = level;
+                                      });
+                                    }
+                                  },
+                                ))
+                            .toList(),
+                      ),
+                      const SizedBox(height: 8.0),
+                      Wrap(
+                        spacing: 8.0,
+                        runSpacing: 8.0,
+                        alignment: WrapAlignment.center,
+                        children: levels
+                            .sublist((levels.length / 2).ceil())
+                            .map((level) => ChoiceChip(
+                                  label: Text(level),
+                                  selected: selectedLevel == level,
+                                  onSelected: (bool selected) {
+                                    if (selected) {
+                                      setState(() {
+                                        selectedLevel = level;
+                                      });
+                                    }
+                                  },
+                                ))
+                            .toList(),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 8.0),
-                  Wrap(
-                    spacing: 8.0,
-                    runSpacing: 8.0,
-                    alignment: WrapAlignment.center,
-                    children: levels
-                        .sublist((levels.length / 2).ceil())
-                        .map((level) => ChoiceChip(
-                              label: Text(level),
-                              selected: selectedLevel == level,
-                              onSelected: (bool selected) {
-                                if (selected) {
-                                  setState(() {
-                                    selectedLevel = level;
-                                  });
-                                }
-                              },
-                            ))
-                        .toList(),
-                  ),
-                ],
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: getLabelDropdownButton(labels),
+                ),
+              ],
+            ),
+          ),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 16.0),
+              child: Text(
+                AppConfig.gitCommit,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Theme.of(context).colorScheme.outline,
+                ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: getLabelDropdownButton(labels),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
       floatingActionButton: getButtonStack([
         FloatingActionButton(
