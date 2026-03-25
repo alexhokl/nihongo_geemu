@@ -49,3 +49,37 @@ tasks:
     desc: Copy APK to Desktop
     platforms: [darwin]
     cmd: cp build/app/outputs/flutter-apk/app-release.apk ~/Desktop/nihongo_geemu.apk
+
+  generate-apk-signing-key:
+    desc: Generate a release keystore for APK signing
+    vars:
+      KEYSTORE_FILE: /tmp/nihongo_geemu_release.jks
+      KEY_ALIAS: nihongo_geemu
+    cmds:
+      - |
+        STORE_PASSWORD=$(gum input --password --prompt "Enter keystore password: ")
+        keytool -genkey -v \
+          -keystore {{.KEYSTORE_FILE}} \
+          -keyalg RSA -keysize 2048 -validity 10000 \
+          -alias {{.KEY_ALIAS}} \
+          -dname "CN=nihongo_geemu, OU=Mobile, O=alexho, L=HK, S=HK, C=HK" \
+          -storepass "$STORE_PASSWORD" \
+          -keypass "$STORE_PASSWORD"
+        base64 -i {{.KEYSTORE_FILE}} -o {{.KEYSTORE_FILE}}.b64
+        printf 'storePassword=%s\nkeyPassword=%s\nkeyAlias=%s\nstoreFile=release.jks\n' \
+          "$STORE_PASSWORD" "$STORE_PASSWORD" {{.KEY_ALIAS}} \
+          > /tmp/nihongo_geemu_key.properties
+        echo "Keystore generated at {{.KEYSTORE_FILE}}"
+        echo "key.properties generated at /tmp/nihongo_geemu_key.properties"
+        echo "Run 'task upload-apk-signing-secrets' to upload to Secret Manager"
+
+  upload-apk-signing-secrets:
+    desc: Upload APK signing keystore and key.properties to GCP Secret Manager
+    vars:
+      KEYSTORE_FILE: /tmp/nihongo_geemu_release.jks
+      GCP_PROJECT: craffy
+    cmds:
+      - gcloud secrets versions add nihongo-geemu-keystore --data-file={{.KEYSTORE_FILE}}.b64 --project={{.GCP_PROJECT}}
+      - gcloud secrets versions add nihongo-geemu-key-properties --data-file=/tmp/nihongo_geemu_key.properties --project={{.GCP_PROJECT}}
+      - rm {{.KEYSTORE_FILE}} {{.KEYSTORE_FILE}}.b64 /tmp/nihongo_geemu_key.properties
+      - echo "Secrets uploaded and local files removed"

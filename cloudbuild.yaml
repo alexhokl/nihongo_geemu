@@ -1,0 +1,60 @@
+logsBucket: "gs://craffy-build-logs"
+
+options:
+  machineType: E2_HIGHCPU_8 # 8 vCPU
+  logging: GCS_ONLY
+
+timeout: "1200s" # 20 minutes
+
+availableSecrets:
+  secretManager:
+    - versionName: projects/craffy/secrets/nihongo-geemu-keystore/versions/latest
+      env: KEYSTORE_B64
+    - versionName: projects/craffy/secrets/nihongo-geemu-key-properties/versions/latest
+      env: KEY_PROPERTIES
+
+steps:
+  - name: "ghcr.io/cirruslabs/flutter:stable"
+    id: Write local.properties
+    waitFor: ["-"]
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        FLUTTER_SDK=$(dirname $(dirname $(which flutter)))
+        echo "flutter.sdk=$$FLUTTER_SDK" > android/local.properties
+        echo "sdk.dir=$$ANDROID_SDK_ROOT" >> android/local.properties
+
+  - name: "ghcr.io/cirruslabs/flutter:stable"
+    id: Write signing files
+    waitFor: [Write local.properties]
+    entrypoint: bash
+    secretEnv: ["KEYSTORE_B64", "KEY_PROPERTIES"]
+    args:
+      - -c
+      - |
+        echo "$$KEYSTORE_B64" | base64 -d > android/app/release.jks
+        printf '%s' "$$KEY_PROPERTIES" > android/key.properties
+
+  - name: "ghcr.io/cirruslabs/flutter:stable"
+    id: Flutter pub get
+    waitFor: [Write local.properties, Write signing files]
+    entrypoint: flutter
+    args: ["pub", "get", "--no-example"]
+
+  - name: "ghcr.io/cirruslabs/flutter:stable"
+    id: Build APK
+    waitFor: [Flutter pub get]
+    entrypoint: flutter
+    args:
+      - build
+      - apk
+      - --dart-define=GIT_COMMIT=$SHORT_SHA
+
+  - name: "gcr.io/cloud-builders/gsutil"
+    id: Upload APK
+    waitFor: [Build APK]
+    args:
+      - cp
+      - build/app/outputs/flutter-apk/app-release.apk
+      - gs://alexhokl_public/apk/nihongo_geemu-$TAG_NAME.apk
