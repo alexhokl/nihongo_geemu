@@ -57,4 +57,4 @@ steps:
     args:
       - cp
       - build/app/outputs/flutter-apk/app-release.apk
-      - gs://alexhokl_public/apk/nihongo_geemu-$TAG_NAME.apk
+      - gs://alexhokl_public/apk/nihongo_geemu-$TAG_NAME-$SHORT_SHA.apk
