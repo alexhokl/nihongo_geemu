@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nihogo_geemu/game_state.dart';
 import 'package:nihogo_geemu/widgets/button.dart';
 import 'package:nihogo_geemu/widgets/route.dart';
+import 'package:nihogo_geemu/widgets/score_bar.dart';
 
 import 'package:nihogo_geemu/widgets/snack_bar.dart';
 
@@ -62,18 +63,25 @@ class _QuestionPageState extends State<QuestionPage> {
           title: Text(title),
           backgroundColor: Theme.of(context).colorScheme.primaryFixedDim,
         ),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              getStatusLine(widget.gameState, statusFontSize),
-              const Text('You have completed all questions!'),
-              SizedBox(
-                height: 500,
-                child: getIncorrectAnswers(widget.gameState),
+        body: Column(
+          children: <Widget>[
+            getScoreBar(widget.gameState, statusFontSize, context),
+            Expanded(
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    const Text('You have completed all questions!'),
+                    _IncorrectAnswersHeader(gameState: widget.gameState),
+                    const SizedBox(height: 8),
+                    Expanded(
+                      child: getIncorrectAnswers(widget.gameState),
+                    ),
+                  ],
+                ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
@@ -96,7 +104,7 @@ class _QuestionPageState extends State<QuestionPage> {
         ),
         body: Column(
           children: [
-            getStatusLine(widget.gameState, statusFontSize),
+            getScoreBar(widget.gameState, statusFontSize, context),
             Center(
               child: Padding(
                   padding: const EdgeInsets.only(
@@ -237,24 +245,6 @@ class _QuestionPageState extends State<QuestionPage> {
     );
   }
 
-  RichText getStatusLine(GameState gameState, double statusFontSize) {
-    return RichText(
-      text: TextSpan(
-        children: [
-          TextSpan(
-            text: 'Correct: ${gameState.correctCount()}',
-            style: TextStyle(color: Colors.green, fontSize: statusFontSize),
-          ),
-          const TextSpan(text: ' | '),
-          TextSpan(
-            text: 'Incorrect: ${gameState.incorrectCount()}',
-            style: TextStyle(color: Colors.red, fontSize: statusFontSize),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget getIncorrectAnswers(GameState gameState) {
     if (gameState.incorrectCount() == 0) {
       return const Text('You got it all correct!');
@@ -270,8 +260,33 @@ class _QuestionPageState extends State<QuestionPage> {
       );
     }).toList();
 
-    return ListView(
-      children: tiles,
+    return Scrollbar(
+      child: ListView.separated(
+        itemCount: tiles.length,
+        separatorBuilder: (context, index) => const Divider(height: 1),
+        itemBuilder: (context, index) => tiles[index],
+      ),
+    );
+  }
+}
+
+class _IncorrectAnswersHeader extends StatelessWidget {
+  const _IncorrectAnswersHeader({required this.gameState});
+  final GameState gameState;
+
+  @override
+  Widget build(BuildContext context) {
+    final count = gameState.incorrectCount();
+    return Padding(
+      padding: const EdgeInsets.only(top: 16),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.error_outline, color: Theme.of(context).colorScheme.error),
+          const SizedBox(width: 8),
+          Text('Incorrect answers ($count)'),
+        ],
+      ),
     );
   }
 }
