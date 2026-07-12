@@ -87,58 +87,28 @@ class _QuestionPageState extends State<QuestionPage> {
 
     final hasSubEntry = widget.gameState.currentSubEntry() != null;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(title),
-        backgroundColor: Theme.of(context).colorScheme.primaryFixedDim,
-      ),
-      body: Column(
-        children: [
-          getStatusLine(widget.gameState, statusFontSize),
-          Center(
-            child: Padding(
-                padding: const EdgeInsets.only(
-                    left: 100.0, right: 100.0, top: 200.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                        'English: ${widget.gameState.firstEnglish()}',
-                        style: const TextStyle(fontSize: 20),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: SizedBox(
-                        width: 300,
-                        child: TextField(
-                          autofocus: true,
-                          autocorrect: false,
-                          // enableSuggestions: false,
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: hasSubEntry ? 'Kanji or Kana of intransitive verb' : 'Kanji or Kana',
-                          ),
-                          onSubmitted: (String value) {
-                            _onAnswer();
-                          },
-                          onChanged: (String value) {
-                            setState(() {
-                              widget.gameState.updateUserAnswer(value);
-                              filled = widget.gameState.filled();
-                            });
-                          },
-                        ),
-                      ),
-                    ),
-                    if (hasSubEntry) ...[
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(title),
+          backgroundColor: Theme.of(context).colorScheme.primaryFixedDim,
+        ),
+        body: Column(
+          children: [
+            getStatusLine(widget.gameState, statusFontSize),
+            Center(
+              child: Padding(
+                  padding: const EdgeInsets.only(
+                      left: 100.0, right: 100.0, top: 200.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
-                          'English: ${widget.gameState.subEntryEnglish()}',
+                          widget.gameState.firstEnglish(),
                           style: const TextStyle(fontSize: 20),
                         ),
                       ),
@@ -147,58 +117,123 @@ class _QuestionPageState extends State<QuestionPage> {
                         child: SizedBox(
                           width: 300,
                           child: TextField(
+                            autofocus: true,
                             autocorrect: false,
-                            decoration: const InputDecoration(
+                            // enableSuggestions: false,
+                            decoration: InputDecoration(
                               border: OutlineInputBorder(),
-                              labelText: 'Kanji or Kana of transitive verb',
+                              labelText: hasSubEntry ? 'Kanji or Kana of intransitive verb' : 'Kanji or Kana',
                             ),
                             onSubmitted: (String value) {
                               _onAnswer();
                             },
                             onChanged: (String value) {
                               setState(() {
-                                widget.gameState.updateSubUserAnswer(value);
+                                widget.gameState.updateUserAnswer(value);
                                 filled = widget.gameState.filled();
                               });
                             },
                           ),
                         ),
                       ),
+                      if (hasSubEntry) ...[
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            widget.gameState.subEntryEnglish()!,
+                            style: const TextStyle(fontSize: 20),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: SizedBox(
+                            width: 300,
+                            child: TextField(
+                              autocorrect: false,
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(),
+                                labelText: 'Kanji or Kana of transitive verb',
+                              ),
+                              onSubmitted: (String value) {
+                                _onAnswer();
+                              },
+                              onChanged: (String value) {
+                                setState(() {
+                                  widget.gameState.updateSubUserAnswer(value);
+                                  filled = widget.gameState.filled();
+                                });
+                              },
+                            ),
+                          ),
+                        ),
+                      ],
                     ],
-                  ],
-                )),
+                  )),
+            ),
+          ],
+        ),
+        floatingActionButton: getButtonStack([
+          FloatingActionButton(
+            heroTag: 'next',
+            onPressed: filled ? _onAnswer : null,
+            tooltip: 'confirm my answer',
+            child: const Icon(Icons.play_arrow),
           ),
-        ],
+          FloatingActionButton(
+            heroTag: 'skip',
+            onPressed: () {
+              final hasSub = widget.gameState.currentSubEntry() != null;
+              final mainEnglish = widget.gameState.firstEnglish();
+              final subEnglish = widget.gameState.subEntryEnglish();
+              final actualAnswer = widget.gameState.answerForDisplay();
+              showDialog<void>(
+                context: context,
+                barrierDismissible: false,
+                builder: (BuildContext dialogContext) {
+                  return AlertDialog(
+                    title: const Text('Actual answer'),
+                    content: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (hasSub) ...[
+                          Text('English (intransitive): $mainEnglish'),
+                          Text('English (transitive): $subEnglish'),
+                        ] else
+                          Text(mainEnglish),
+                        const SizedBox(height: 12),
+                        Text('Answer: $actualAnswer'),
+                      ],
+                    ),
+                    actions: [
+                      TextButton(
+                        child: const Text('OK'),
+                        onPressed: () {
+                          widget.gameState.skip();
+                          widget.gameState.next();
+                          Navigator.of(dialogContext).pop();
+                          Navigator.of(context)
+                              .pushReplacement(createRoute(widget.gameState));
+                        },
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+            tooltip: "I don't know",
+            child: const Icon(Icons.question_mark),
+          ),
+          FloatingActionButton(
+            heroTag: 'finish',
+            onPressed: () {
+              Navigator.of(context).popUntil((route) => route.isFirst);
+            },
+            tooltip: 'finish',
+            child: const Icon(Icons.home),
+          ),
+        ]),
       ),
-      floatingActionButton: getButtonStack([
-        FloatingActionButton(
-          heroTag: 'next',
-          onPressed: filled ? _onAnswer : null,
-          tooltip: 'confirm my answer',
-          child: const Icon(Icons.play_arrow),
-        ),
-        FloatingActionButton(
-          heroTag: 'skip',
-          onPressed: () {
-            final actualAnswer = widget.gameState.answerForDisplay();
-            actualAnswerSnackBar(
-                context, widget.gameState.firstEnglish(), actualAnswer);
-            widget.gameState.skip();
-            widget.gameState.next();
-            Navigator.of(context).push(createRoute(widget.gameState));
-          },
-          tooltip: "I don't know",
-          child: const Icon(Icons.question_mark),
-        ),
-        FloatingActionButton(
-          heroTag: 'finish',
-          onPressed: () {
-            Navigator.of(context).popUntil((route) => route.isFirst);
-          },
-          tooltip: 'finish',
-          child: const Icon(Icons.home),
-        ),
-      ]),
     );
   }
 
