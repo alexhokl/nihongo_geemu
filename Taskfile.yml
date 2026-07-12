@@ -50,6 +50,11 @@ tasks:
     platforms: [darwin]
     cmd: cp build/app/outputs/flutter-apk/app-release.apk ~/Desktop/nihongo_geemu.apk
 
+  deploy-mac:
+    desc: Deploy MacOS app locally
+    platforms: [darwin]
+    cmd: cp -r build/macos/Build/Products/Release/nihogo_geemu.app /Applications/
+
   generate-apk-signing-key:
     desc: Generate a release keystore for APK signing
     vars:
