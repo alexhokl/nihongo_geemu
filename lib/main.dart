@@ -48,6 +48,7 @@ class _GameHomePageState extends State<GameHomePage> {
   List<String> levels = [];
   String selectedLevel = 'N5';
   String selectedLabel = 'nouns';
+  bool studyMode = false;
 
   @override
   void initState() {
@@ -133,6 +134,7 @@ class _GameHomePageState extends State<GameHomePage> {
       questions: questions,
       level: selectedLevel,
       label: selectedLabel,
+      studyMode: studyMode,
     );
     Navigator.of(context).push(createRoute(gameState));
   }
@@ -212,6 +214,18 @@ class _GameHomePageState extends State<GameHomePage> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: getLabelDropdownButton(labels),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: SwitchListTile(
+                    title: const Text('Study mode (flashcards)'),
+                    value: studyMode,
+                    onChanged: (bool value) {
+                      setState(() {
+                        studyMode = value;
+                      });
+                    },
+                  ),
                 ),
               ],
             ),
