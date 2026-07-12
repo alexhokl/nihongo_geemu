@@ -55,6 +55,17 @@ tasks:
     platforms: [darwin]
     cmd: cp -r build/macos/Build/Products/Release/nihogo_geemu.app /Applications/
 
+  tag:
+    desc: Create a new git tag with incremented patch version (0.1.x)
+    silent: true
+    cmds:
+      - |
+        LATEST=$(git tag --sort=-version:refname | grep -E '^0\.1\.[0-9]+$' | head -1)
+        PATCH=$(echo "$LATEST" | cut -d. -f3)
+        NEW_TAG="0.1.$((PATCH + 1))"
+        git tag "$NEW_TAG"
+        echo "Created tag $NEW_TAG"
+
   generate-apk-signing-key:
     desc: Generate a release keystore for APK signing
     vars:
