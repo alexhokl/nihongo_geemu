@@ -113,9 +113,10 @@ class _GameHomePageState extends State<GameHomePage> {
   }
 
   _onStartGame() {
+    final isVerbPairs = selectedLabel.contains('verb pairs');
     final questions =
-      selectedLabel == 'verb pairs'
-      ? getQuestionsByVerbPairs(entries, selectedLevel)
+      isVerbPairs
+      ? getQuestionsByVerbPairs(entries, selectedLevel, selectedLabel)
       : getEntriesByLabel(entries, [selectedLevel, selectedLabel]).map((entry) => Question(
           kanji: entry.kanji,
           kana: entry.kana,
