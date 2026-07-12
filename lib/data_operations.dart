@@ -12,9 +12,15 @@ List<Entry> getEntriesByLabel(List<Entry> entries, List<String> selectedLabels) 
   return filteredEntries;
 }
 
-List<Question> getQuestionsByVerbPairs(List<Entry> entries, String selectedLevel) {
+List<Question> getQuestionsByVerbPairs(
+  List<Entry> entries,
+  String selectedLevel,
+  String selectedLabel,
+) {
   final verbPairEntries = entries.where(
-    (entry) => entry.labels.contains(selectedLevel) && entry.labels.contains('verb pairs'),
+    (entry) =>
+        entry.labels.contains(selectedLevel) &&
+        entry.labels.contains(selectedLabel),
   );
 
   final transitiveVerbEntries = entries.where(
