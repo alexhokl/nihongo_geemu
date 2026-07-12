@@ -8,15 +8,25 @@ class GameState {
   String level;
   String label;
   String subUserInput = "";
+  final bool studyMode;
 
   late int questionIndex;
+  late final List<int> _studyOrder;
+  late int _studyOrderPosition;
 
   GameState({
     required this.questions,
     required this.level,
     required this.label,
+    this.studyMode = false,
   }) {
-    questionIndex = _nextQuesitonIndex();
+    if (studyMode) {
+      _studyOrder = List.generate(questions.length, (i) => i)..shuffle();
+      _studyOrderPosition = 0;
+      questionIndex = _studyOrder.isEmpty ? -1 : _studyOrder[0];
+    } else {
+      questionIndex = _nextQuesitonIndex();
+    }
     if (questionIndex < 0) {
       throw Exception('No questions found xx');
     }
@@ -34,12 +44,25 @@ class GameState {
   }
 
   bool next() {
+    if (studyMode) {
+      _studyOrderPosition++;
+      if (_studyOrderPosition >= _studyOrder.length) {
+        return false;
+      }
+      questionIndex = _studyOrder[_studyOrderPosition];
+      questions[questionIndex].shown = true;
+      return true;
+    }
     questionIndex = _nextQuesitonIndex();
     if (questionIndex != -1) {
       questions[questionIndex].shown = true;
       return true;
     }
     return false;
+  }
+
+  bool studyCompleted() {
+    return _studyOrderPosition >= _studyOrder.length;
   }
 
   int shownCount() {
