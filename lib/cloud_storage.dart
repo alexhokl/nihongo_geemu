@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:http/http.dart' as http;
 
 Future<String?> getMD5HashFromBucket(String bucketName, String bucketPath) async {
@@ -42,6 +41,10 @@ Future<void> downloadFile(String bucketName, String bucketPath, String localPath
 }
 
 Future<bool> hasConnection() async {
-  final List<ConnectivityResult> connectivityResult = await (Connectivity().checkConnectivity());
-  return !connectivityResult.contains(ConnectivityResult.none);
+  try {
+    final result = await InternetAddress.lookup('storage.googleapis.com');
+    return result.isNotEmpty && result[0].rawAddress.isNotEmpty;
+  } on SocketException catch (_) {
+    return false;
+  }
 }
