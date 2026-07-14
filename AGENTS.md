@@ -79,7 +79,7 @@ task coverage       # renders lcov HTML and opens it in the browser
 ### Imports
 
 - Always use `package:` URI scheme — **never** relative paths (`../`).
-- Internal package imports: `package:nihogo_geemu/<file>.dart`
+- Internal package imports: `package:nihongo_geemu/<file>.dart`
 - Use `as` aliases when disambiguating packages:
   ```dart
   import 'dart:io' as io;

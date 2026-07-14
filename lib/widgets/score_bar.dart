@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nihogo_geemu/game_state.dart';
+import 'package:nihongo_geemu/game_state.dart';
 
 Widget getScoreBar(GameState gameState, double fontSize, BuildContext context) {
   final colorScheme = Theme.of(context).colorScheme;

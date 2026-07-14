@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:nihogo_geemu/game_state.dart';
-import 'package:nihogo_geemu/question_page.dart';
-import 'package:nihogo_geemu/study_page.dart';
+import 'package:nihongo_geemu/game_state.dart';
+import 'package:nihongo_geemu/question_page.dart';
+import 'package:nihongo_geemu/study_page.dart';
 
 Route createRoute(GameState gameState) {
     final page = gameState.studyMode

@@ -1,4 +1,4 @@
-name: nihogo_geemu
+name: nihongo_geemu
 description: "A game of Japanese words"
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.

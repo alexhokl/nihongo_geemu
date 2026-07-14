@@ -1,4 +1,4 @@
-import 'package:nihogo_geemu/entry.dart';
+import 'package:nihongo_geemu/entry.dart';
 
 class Question extends Entry {
   String userInput = "";

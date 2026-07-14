@@ -1,7 +1,7 @@
 import 'dart:math';
 
-import 'package:nihogo_geemu/entry.dart';
-import 'package:nihogo_geemu/question.dart';
+import 'package:nihongo_geemu/entry.dart';
+import 'package:nihongo_geemu/question.dart';
 
 class GameState {
   List<Question> questions;

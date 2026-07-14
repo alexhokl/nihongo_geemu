@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:nihogo_geemu/game_state.dart';
-import 'package:nihogo_geemu/widgets/button.dart';
-import 'package:nihogo_geemu/widgets/route.dart';
-import 'package:nihogo_geemu/widgets/score_bar.dart';
+import 'package:nihongo_geemu/game_state.dart';
+import 'package:nihongo_geemu/widgets/button.dart';
+import 'package:nihongo_geemu/widgets/route.dart';
+import 'package:nihongo_geemu/widgets/score_bar.dart';
 
-import 'package:nihogo_geemu/widgets/snack_bar.dart';
+import 'package:nihongo_geemu/widgets/snack_bar.dart';
 
 class QuestionPage extends StatefulWidget {
   const QuestionPage({

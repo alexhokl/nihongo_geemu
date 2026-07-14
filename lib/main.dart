@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:nihogo_geemu/app_config.dart';
-import 'package:nihogo_geemu/cloud_storage.dart';
-import 'package:nihogo_geemu/data_operations.dart';
-import 'package:nihogo_geemu/database_operation.dart';
-import 'package:nihogo_geemu/entry.dart';
-import 'package:nihogo_geemu/game_state.dart';
-import 'package:nihogo_geemu/local_storage.dart';
-import 'package:nihogo_geemu/question.dart';
-import 'package:nihogo_geemu/theme.dart';
-import 'package:nihogo_geemu/widgets/button.dart';
-import 'package:nihogo_geemu/widgets/route.dart';
-import 'package:nihogo_geemu/widgets/snack_bar.dart';
+import 'package:nihongo_geemu/app_config.dart';
+import 'package:nihongo_geemu/cloud_storage.dart';
+import 'package:nihongo_geemu/data_operations.dart';
+import 'package:nihongo_geemu/database_operation.dart';
+import 'package:nihongo_geemu/entry.dart';
+import 'package:nihongo_geemu/game_state.dart';
+import 'package:nihongo_geemu/local_storage.dart';
+import 'package:nihongo_geemu/question.dart';
+import 'package:nihongo_geemu/theme.dart';
+import 'package:nihongo_geemu/widgets/button.dart';
+import 'package:nihongo_geemu/widgets/route.dart';
+import 'package:nihongo_geemu/widgets/snack_bar.dart';
 
 void main() {
   runApp(const NihongoGeemu());

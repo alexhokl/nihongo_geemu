@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'dart:io' as io;
 import 'package:flutter/material.dart';
-import 'package:nihogo_geemu/cloud_storage.dart';
-import 'package:nihogo_geemu/entry.dart';
+import 'package:nihongo_geemu/cloud_storage.dart';
+import 'package:nihongo_geemu/entry.dart';
 import 'package:path/path.dart' as p;
 import 'package:sqflite/sqflite.dart' as sqflite;
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';

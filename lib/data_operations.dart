@@ -1,5 +1,5 @@
-import 'package:nihogo_geemu/entry.dart';
-import 'package:nihogo_geemu/question.dart';
+import 'package:nihongo_geemu/entry.dart';
+import 'package:nihongo_geemu/question.dart';
 
 List<Entry> getEntriesByLabel(List<Entry> entries, List<String> selectedLabels) {
   List<Entry> filteredEntries = [];
