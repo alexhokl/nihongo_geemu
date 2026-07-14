@@ -42,6 +42,13 @@ class _StudyPageState extends State<StudyPage> {
         appBar: AppBar(
           title: const Text('Study complete'),
           backgroundColor: Theme.of(context).colorScheme.primaryFixedDim,
+          automaticallyImplyLeading: false,
+          leading: IconButton(
+            icon: const Icon(Icons.home),
+            tooltip: 'home',
+            onPressed: () =>
+                Navigator.of(context).popUntil((route) => route.isFirst),
+          ),
         ),
         body: Center(
           child: Padding(
@@ -60,13 +67,6 @@ class _StudyPageState extends State<StudyPage> {
             ),
           ),
         ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            Navigator.of(context).popUntil((route) => route.isFirst);
-          },
-          tooltip: 'finish',
-          child: const Icon(Icons.stop_rounded),
-        ),
       );
     }
 
@@ -81,6 +81,13 @@ class _StudyPageState extends State<StudyPage> {
         appBar: AppBar(
           title: Text(title),
           backgroundColor: Theme.of(context).colorScheme.primaryFixedDim,
+          automaticallyImplyLeading: false,
+          leading: IconButton(
+            icon: const Icon(Icons.home),
+            tooltip: 'home',
+            onPressed: () =>
+                Navigator.of(context).popUntil((route) => route.isFirst),
+          ),
         ),
         body: Column(
           children: [
@@ -143,14 +150,6 @@ class _StudyPageState extends State<StudyPage> {
             onPressed: _onNext,
             tooltip: 'next card',
             child: const Icon(Icons.play_arrow),
-          ),
-          FloatingActionButton(
-            heroTag: 'finish',
-            onPressed: () {
-              Navigator.of(context).popUntil((route) => route.isFirst);
-            },
-            tooltip: 'finish',
-            child: const Icon(Icons.home),
           ),
         ]),
       ),

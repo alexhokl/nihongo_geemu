@@ -62,6 +62,13 @@ class _QuestionPageState extends State<QuestionPage> {
         appBar: AppBar(
           title: Text(title),
           backgroundColor: Theme.of(context).colorScheme.primaryFixedDim,
+          automaticallyImplyLeading: false,
+          leading: IconButton(
+            icon: const Icon(Icons.home),
+            tooltip: 'home',
+            onPressed: () =>
+                Navigator.of(context).popUntil((route) => route.isFirst),
+          ),
         ),
         body: Column(
           children: <Widget>[
@@ -83,13 +90,6 @@ class _QuestionPageState extends State<QuestionPage> {
             ),
           ],
         ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            Navigator.of(context).popUntil((route) => route.isFirst);
-          },
-          tooltip: 'finish',
-          child: const Icon(Icons.stop_rounded),
-        ),
       );
     }
 
@@ -101,6 +101,13 @@ class _QuestionPageState extends State<QuestionPage> {
         appBar: AppBar(
           title: Text(title),
           backgroundColor: Theme.of(context).colorScheme.primaryFixedDim,
+          automaticallyImplyLeading: false,
+          leading: IconButton(
+            icon: const Icon(Icons.home),
+            tooltip: 'home',
+            onPressed: () =>
+                Navigator.of(context).popUntil((route) => route.isFirst),
+          ),
         ),
         body: Column(
           children: [
@@ -231,14 +238,6 @@ class _QuestionPageState extends State<QuestionPage> {
             },
             tooltip: "I don't know",
             child: const Icon(Icons.question_mark),
-          ),
-          FloatingActionButton(
-            heroTag: 'finish',
-            onPressed: () {
-              Navigator.of(context).popUntil((route) => route.isFirst);
-            },
-            tooltip: 'finish',
-            child: const Icon(Icons.home),
           ),
         ]),
       ),
