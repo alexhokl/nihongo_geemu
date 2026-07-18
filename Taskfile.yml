@@ -1,24 +1,16 @@
 version: "3"
 
 tasks:
-  build:
-    desc: Build
-    cmds:
-      - task: mac
-      - task: apk
-
   mac:
     desc: Build MacOS
-    cmd: flutter build macos --dart-define=GIT_COMMIT=$(git rev-parse --short HEAD)
+    platforms: [darwin]
+    cmds:
+      - flutter build macos --dart-define=GIT_COMMIT=$(git rev-parse --short HEAD)
+      - cp -r build/macos/Build/Products/Release/Nihongo\ Geemu.app /Applications/
 
   apk:
     desc: Build APK
     cmd: flutter build apk --dart-define=GIT_COMMIT=$(git rev-parse --short HEAD)
-
-  run:
-    desc: Run on MacOS
-    platforms: [darwin]
-    cmd: open "./build/macos/Build/Products/Release/Nihongo Geemu.app"
 
   run-android:
     desc: Run on Android
@@ -44,16 +36,6 @@ tasks:
   lint-fix:
     desc: Lint Fix
     cmd: dart fix --apply
-
-  copy-apk-to-desktop:
-    desc: Copy APK to Desktop
-    platforms: [darwin]
-    cmd: cp build/app/outputs/flutter-apk/app-release.apk ~/Desktop/nihongo_geemu.apk
-
-  deploy-mac:
-    desc: Deploy MacOS app locally
-    platforms: [darwin]
-    cmd: cp -r "build/macos/Build/Products/Release/Nihongo Geemu.app" /Applications/
 
   tag:
     desc: Create a new git tag with incremented patch version (0.1.x)
