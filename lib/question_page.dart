@@ -112,10 +112,10 @@ class _QuestionPageState extends State<QuestionPage> {
         body: Column(
           children: [
             getScoreBar(widget.gameState, statusFontSize, context),
-            Center(
-              child: Padding(
-                  padding: const EdgeInsets.only(
-                      left: 100.0, right: 100.0, top: 200.0),
+            Expanded(
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 100.0),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     mainAxisSize: MainAxisSize.min,
@@ -137,7 +137,9 @@ class _QuestionPageState extends State<QuestionPage> {
                             // enableSuggestions: false,
                             decoration: InputDecoration(
                               border: OutlineInputBorder(),
-                              labelText: hasSubEntry ? 'Kanji or Kana of intransitive verb' : 'Kanji or Kana',
+                              labelText: hasSubEntry
+                                  ? 'Kanji or Kana of intransitive verb'
+                                  : 'Kanji or Kana',
                             ),
                             onSubmitted: (String value) {
                               _onAnswer();
@@ -183,7 +185,9 @@ class _QuestionPageState extends State<QuestionPage> {
                         ),
                       ],
                     ],
-                  )),
+                  ),
+                ),
+              ),
             ),
           ],
         ),
