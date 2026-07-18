@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "com.example" "\0"
-            VALUE "FileDescription", "nihogo_geemu" "\0"
+            VALUE "FileDescription", "nihongo_geemu" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "nihogo_geemu" "\0"
+            VALUE "InternalName", "nihongo_geemu" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2024 com.example. All rights reserved." "\0"
-            VALUE "OriginalFilename", "nihogo_geemu.exe" "\0"
-            VALUE "ProductName", "nihogo_geemu" "\0"
+            VALUE "OriginalFilename", "nihongo_geemu.exe" "\0"
+            VALUE "ProductName", "nihongo_geemu" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END
