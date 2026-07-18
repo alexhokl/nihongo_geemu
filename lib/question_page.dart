@@ -45,11 +45,9 @@ class _QuestionPageState extends State<QuestionPage> {
     if (gameState.completedAllQuestions()) {
       return 'Congratulations!';
     }
-    final currentCount = gameState.shownCount();
-    final totalCount = gameState.totalQuestionCount();
     final label = gameState.label;
     final level = gameState.level;
-    return 'Question $currentCount / $totalCount of $label in $level';
+    return '$label at $level';
   }
 
   @override

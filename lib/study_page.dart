@@ -21,7 +21,7 @@ class _StudyPageState extends State<StudyPage> {
     final totalCount = gameState.totalQuestionCount();
     final label = gameState.label;
     final level = gameState.level;
-    return 'Card $currentCount / $totalCount of $label in $level';
+    return '$label at $level [$currentCount/$totalCount]';
   }
 
   void _onNext() {
@@ -72,8 +72,7 @@ class _StudyPageState extends State<StudyPage> {
 
     final hasSubEntry = widget.gameState.currentSubEntry() != null;
     final progress =
-        widget.gameState.shownCount() /
-        widget.gameState.totalQuestionCount();
+        widget.gameState.shownCount() / widget.gameState.totalQuestionCount();
 
     return PopScope(
       canPop: false,
@@ -92,7 +91,8 @@ class _StudyPageState extends State<StudyPage> {
         body: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
               child: LinearProgressIndicator(
                 value: progress,
                 minHeight: 12,
