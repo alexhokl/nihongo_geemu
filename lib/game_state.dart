@@ -151,6 +151,23 @@ class GameState {
     return kana;
   }
 
+  String jishoWordMain() {
+    final kanji = questions[questionIndex].kanji.trim();
+    if (kanji.isNotEmpty) {
+      return kanji;
+    }
+    return questions[questionIndex].kana.trim();
+  }
+
+  String jishoWordSub() {
+    final subEntry = questions[questionIndex].subEntry;
+    final kanji = subEntry?.kanji.trim() ?? '';
+    if (kanji.isNotEmpty) {
+      return kanji;
+    }
+    return (subEntry?.kana ?? '').trim();
+  }
+
   String firstEnglish() {
     return questions[questionIndex].english.first;
   }
