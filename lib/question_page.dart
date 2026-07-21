@@ -93,6 +93,8 @@ class _QuestionPageState extends State<QuestionPage> {
     }
 
     final hasSubEntry = widget.gameState.currentSubEntry() != null;
+    final horizontalPadding =
+        (MediaQuery.of(context).size.width * 0.15).clamp(16.0, 100.0);
 
     return PopScope(
       canPop: false,
@@ -112,79 +114,79 @@ class _QuestionPageState extends State<QuestionPage> {
           children: [
             getScoreBar(widget.gameState, statusFontSize, context),
             Expanded(
-              child: Center(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 100.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
+              child: SingleChildScrollView(
+                padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        widget.gameState.firstEnglish(),
+                        style: const TextStyle(fontSize: 20),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 300),
+                        child: TextField(
+                          autofocus: true,
+                          autocorrect: false,
+                          // enableSuggestions: false,
+                          decoration: InputDecoration(
+                            border: OutlineInputBorder(),
+                            labelText: hasSubEntry
+                                ? 'Kanji or Kana of intransitive verb'
+                                : 'Kanji or Kana',
+                          ),
+                          onSubmitted: (String value) {
+                            _onAnswer();
+                          },
+                          onChanged: (String value) {
+                            setState(() {
+                              widget.gameState.updateUserAnswer(value);
+                              filled = widget.gameState.filled();
+                            });
+                          },
+                        ),
+                      ),
+                    ),
+                    if (hasSubEntry) ...[
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
-                          widget.gameState.firstEnglish(),
+                          widget.gameState.subEntryEnglish()!,
                           style: const TextStyle(fontSize: 20),
+                          textAlign: TextAlign.center,
                         ),
                       ),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: SizedBox(
-                          width: 300,
+                        child: ConstrainedBox(
+                          constraints: const BoxConstraints(maxWidth: 300),
                           child: TextField(
-                            autofocus: true,
                             autocorrect: false,
-                            // enableSuggestions: false,
-                            decoration: InputDecoration(
+                            decoration: const InputDecoration(
                               border: OutlineInputBorder(),
-                              labelText: hasSubEntry
-                                  ? 'Kanji or Kana of intransitive verb'
-                                  : 'Kanji or Kana',
+                              labelText: 'Kanji or Kana of transitive verb',
                             ),
                             onSubmitted: (String value) {
                               _onAnswer();
                             },
                             onChanged: (String value) {
                               setState(() {
-                                widget.gameState.updateUserAnswer(value);
+                                widget.gameState.updateSubUserAnswer(value);
                                 filled = widget.gameState.filled();
                               });
                             },
                           ),
                         ),
                       ),
-                      if (hasSubEntry) ...[
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            widget.gameState.subEntryEnglish()!,
-                            style: const TextStyle(fontSize: 20),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: SizedBox(
-                            width: 300,
-                            child: TextField(
-                              autocorrect: false,
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(),
-                                labelText: 'Kanji or Kana of transitive verb',
-                              ),
-                              onSubmitted: (String value) {
-                                _onAnswer();
-                              },
-                              onChanged: (String value) {
-                                setState(() {
-                                  widget.gameState.updateSubUserAnswer(value);
-                                  filled = widget.gameState.filled();
-                                });
-                              },
-                            ),
-                          ),
-                        ),
-                      ],
                     ],
-                  ),
+                  ],
                 ),
               ),
             ),
