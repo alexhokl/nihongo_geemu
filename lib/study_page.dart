@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nihongo_geemu/game_state.dart';
 import 'package:nihongo_geemu/widgets/button.dart';
+import 'package:nihongo_geemu/widgets/jisho_link.dart';
 import 'package:nihongo_geemu/widgets/route.dart';
 
 class StudyPage extends StatefulWidget {
@@ -137,6 +138,20 @@ class _StudyPageState extends State<StudyPage> {
                           label: 'Answer',
                           text: widget.gameState.answerFOrMainEntryDisplay(),
                         ),
+                      const SizedBox(height: 24),
+                      JishoLink(
+                        label: hasSubEntry
+                            ? 'View intransitive on Jisho'
+                            : 'View on Jisho',
+                        word: widget.gameState.jishoWordMain(),
+                      ),
+                      if (hasSubEntry) ...[
+                        const SizedBox(height: 8),
+                        JishoLink(
+                          label: 'View transitive on Jisho',
+                          word: widget.gameState.jishoWordSub(),
+                        ),
+                      ],
                     ],
                   ),
                 ),
