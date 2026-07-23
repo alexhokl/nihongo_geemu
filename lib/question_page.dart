@@ -217,8 +217,8 @@ class _QuestionPageState extends State<QuestionPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         if (hasSub) ...[
-                          Text('English (intransitive): $mainEnglish'),
-                          Text('English (transitive): $subEnglish'),
+                          Text('intransitive: $mainEnglish'),
+                          Text('transitive: $subEnglish'),
                         ] else
                           Text(mainEnglish),
                         const SizedBox(height: 12),

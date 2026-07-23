@@ -111,11 +111,11 @@ class _StudyPageState extends State<StudyPage> {
                     children: <Widget>[
                       if (hasSubEntry) ...[
                         _Prompt(
-                          label: 'English (intransitive)',
+                          label: 'intransitive',
                           text: widget.gameState.firstEnglish(),
                         ),
                         _Prompt(
-                          label: 'English (transitive)',
+                          label: 'transitive',
                           text: widget.gameState.subEntryEnglish()!,
                         ),
                       ] else
