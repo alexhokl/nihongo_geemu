@@ -6,6 +6,9 @@ options:
 
 timeout: "1200s" # 20 minutes
 
+substitutions:
+  _FLUTTER_IMAGE: "asia-east1-docker.pkg.dev/craffy/private/flutter:3.47.7"
+
 availableSecrets:
   secretManager:
     - versionName: projects/craffy/secrets/nihongo-geemu-keystore/versions/latest
@@ -14,7 +17,7 @@ availableSecrets:
       env: KEY_PROPERTIES
 
 steps:
-  - name: "ghcr.io/cirruslabs/flutter:stable"
+  - name: "${_FLUTTER_IMAGE}"
     id: Write local.properties
     waitFor: ["-"]
     entrypoint: bash
@@ -25,7 +28,7 @@ steps:
         echo "flutter.sdk=$$FLUTTER_SDK" > android/local.properties
         echo "sdk.dir=$$ANDROID_SDK_ROOT" >> android/local.properties
 
-  - name: "ghcr.io/cirruslabs/flutter:stable"
+  - name: "gcr.io/cloud-builders/gcloud"
     id: Write signing files
     waitFor: [Write local.properties]
     entrypoint: bash
@@ -36,13 +39,13 @@ steps:
         echo "$$KEYSTORE_B64" | base64 -d > android/app/release.jks
         printf '%s' "$$KEY_PROPERTIES" > android/key.properties
 
-  - name: "ghcr.io/cirruslabs/flutter:stable"
+  - name: "${_FLUTTER_IMAGE}"
     id: Flutter pub get
     waitFor: [Write local.properties, Write signing files]
     entrypoint: flutter
     args: ["pub", "get", "--no-example"]
 
-  - name: "ghcr.io/cirruslabs/flutter:stable"
+  - name: "${_FLUTTER_IMAGE}"
     id: Build APK
     waitFor: [Flutter pub get]
     entrypoint: flutter
