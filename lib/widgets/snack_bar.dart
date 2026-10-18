@@ -1,73 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_helper/ui.dart';
 
 void noInternetConnectinoSnackBar(BuildContext context) {
-  const msg = 'Please connect to the internet to download the question database.';
-  ScaffoldMessenger.of(context)
-    ..removeCurrentSnackBar()
-    ..showSnackBar(
-      const SnackBar(
-        content: Text(
-          msg,
-          style: TextStyle(color: Colors.black),
-        ),
-        backgroundColor: Colors.red,
-    ));
+  showMessage(
+    context,
+    'Please connect to the internet to download the question database.',
+    kind: MessageKind.error,
+  );
 }
 
 void workingOfflineSnackBar(BuildContext context) {
-  const msg = 'No internet connection. Using cached question database.';
-  ScaffoldMessenger.of(context)
-    ..removeCurrentSnackBar()
-    ..showSnackBar(
-      const SnackBar(
-        content: Text(
-          msg,
-          style: TextStyle(color: Colors.black),
-        ),
-        backgroundColor: Colors.amberAccent,
-    ));
+  showMessage(
+    context,
+    'No internet connection. Using cached question database.',
+    kind: MessageKind.warning,
+  );
 }
 
 void noQuestionsFoundSnackBar(BuildContext context) {
-  const msg = 'Sorry no questions found for the selected labels';
-  ScaffoldMessenger.of(context)
-    ..removeCurrentSnackBar()
-    ..showSnackBar(
-      const SnackBar(
-        content: Text(
-          msg,
-          style: TextStyle(color: Colors.black),
-        ),
-        backgroundColor: Colors.red,
-    ));
+  showMessage(
+    context,
+    'Sorry no questions found for the selected labels',
+    kind: MessageKind.error,
+  );
 }
 
 void correctAnswerSnackBar(BuildContext context) {
-  const msg = 'Correct!';
-  ScaffoldMessenger.of(context)
-    ..removeCurrentSnackBar()
-    ..showSnackBar(
-      const SnackBar(
-        content: Text(
-          msg,
-          style: TextStyle(color: Colors.black),
-        ),
-        backgroundColor: Colors.greenAccent,
-    ));
+  showMessage(context, 'Correct!', kind: MessageKind.success);
 }
 
 void wrongAnswerSnackBar(BuildContext context) {
-  const msg = 'Sorry keep trying!';
-  ScaffoldMessenger.of(context)
-    ..removeCurrentSnackBar()
-    ..showSnackBar(
-      const SnackBar(
-        content: Text(
-          msg,
-          style: TextStyle(color: Colors.black),
-        ),
-        backgroundColor: Colors.amberAccent,
-    ));
+  showMessage(context, 'Sorry keep trying!', kind: MessageKind.warning);
 }
-
-

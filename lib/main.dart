@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nihongo_geemu/app_config.dart';
+import 'package:flutter_helper/ui.dart';
 import 'package:nihongo_geemu/cloud_storage.dart';
 import 'package:nihongo_geemu/data_operations.dart';
 import 'package:nihongo_geemu/database_operation.dart';
@@ -7,7 +7,6 @@ import 'package:nihongo_geemu/entry.dart';
 import 'package:nihongo_geemu/game_state.dart';
 import 'package:nihongo_geemu/local_storage.dart';
 import 'package:nihongo_geemu/question.dart';
-import 'package:nihongo_geemu/theme.dart';
 import 'package:nihongo_geemu/widgets/button.dart';
 import 'package:nihongo_geemu/widgets/route.dart';
 import 'package:nihongo_geemu/widgets/snack_bar.dart';
@@ -22,11 +21,12 @@ class NihongoGeemu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const title = '日本語ゲーム';
+    final themes = themesFromSeed(Colors.teal);
     return MaterialApp(
       title: title,
       home: const GameHomePage(title: title),
-      theme: getLightTheme(),
-      darkTheme: getDarkTheme(),
+      theme: themes.light,
+      darkTheme: themes.dark,
       themeMode: ThemeMode.light,
     );
   }
@@ -113,7 +113,7 @@ class _GameHomePageState extends State<GameHomePage> {
       ..sort();
   }
 
-  _onStartGame() {
+  void _onStartGame() {
     final isVerbPairs = selectedLabel.contains('verb pairs');
     final questions =
       isVerbPairs
@@ -232,16 +232,7 @@ class _GameHomePageState extends State<GameHomePage> {
           ),
           Align(
             alignment: Alignment.bottomCenter,
-            child: Padding(
-              padding: const EdgeInsets.only(bottom: 16.0),
-              child: Text(
-                AppConfig.gitCommit,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Theme.of(context).colorScheme.outline,
-                ),
-              ),
-            ),
+            child: const GitCommitFooter(),
           ),
         ],
       ),

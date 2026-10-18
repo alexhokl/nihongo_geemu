@@ -9,8 +9,8 @@ This file provides guidance for agentic coding tools (AI assistants, bots) worki
 **Nihongo Geemu** is a Flutter application for Japanese vocabulary study. It is a multi-platform app
 (Android, iOS, macOS, Linux, Windows) written entirely in Dart using Flutter's Material 3 framework.
 
-- **Language:** Dart (SDK `^3.5.4`)
-- **Framework:** Flutter (stable channel, `>=3.24.0`), Material 3
+- **Language:** Dart (SDK `^3.12.0`)
+- **Framework:** Flutter, Material 3 (CI builds with the private `flutter:3.47.7` image)
 - **Task runner:** [go-task](https://taskfile.dev/) (`Taskfile.yml`) — use `task <name>`
 - **Package manager:** `pub` (`pubspec.yaml`)
 
@@ -21,17 +21,20 @@ This file provides guidance for agentic coding tools (AI assistants, bots) worki
 ### Build
 
 ```bash
-task build          # Build all targets (macOS + Android APK)
-task mac            # flutter build macos
+task mac            # flutter build macos and install in /Applications
 task apk            # flutter build apk
 ```
 
 ### Run
 
 ```bash
-task run            # Open the macOS release build (macOS only)
+task run-flutter    # flutter run on macOS
 task run-android    # Run on first connected Android device
 ```
+
+`mac`, `apk`, `run-flutter`, `run-android`, the APK signing key tasks and
+`tag` are included from `../flutter-helper/taskfiles/flutter.yml`, which needs
+a sibling checkout of flutter-helper.
 
 ### Tests
 
@@ -63,8 +66,9 @@ flutter analyze     # static analysis (surfaces warnings/errors)
 dart format lib/ test/   # auto-format source files
 ```
 
-Lint configuration is in `analysis_options.yaml`. The project inherits
-`package:flutter_lints/flutter.yaml` defaults with no overrides.
+Lint configuration is in `analysis_options.yaml`, which includes the shared
+`package:flutter_helper/analysis_options.yaml` (`flutter_lints` 6 plus common
+excludes) with no overrides.
 
 ### Coverage
 
@@ -154,11 +158,10 @@ lib/
 ├── database_operation.dart # SQLite DB access layer (platform-aware)
 ├── cloud_storage.dart      # GCS HTTP client (hash check + download)
 ├── local_storage.dart      # Local file path + MD5 hash utilities
-├── theme.dart              # Material 3 theme configuration
 └── widgets/
     ├── button.dart         # Reusable floating button stack widget
     ├── route.dart          # Slide page transition builder
-    └── snack_bar.dart      # Named snack bar helper functions
+    └── snack_bar.dart      # Named snack bar helpers (wrap flutter_helper's showMessage)
 test/
 ├── widget_test.dart        # Widget smoke test (WidgetTester)
 └── sqflite_ffi_test.dart   # SQLite FFI unit tests (in-memory DB)
@@ -197,7 +200,19 @@ Key runtime packages:
 | `path_provider` | Platform-specific file paths |
 | `http` | HTTP client for GCS downloads |
 | `crypto` | MD5 hash computation |
-| `connectivity_plus` | Network connectivity checks |
+| `url_launcher` | Opening Jisho links |
+| `flutter_helper` | Shared helpers (see below) |
+
+Connectivity is checked with a DNS lookup of `storage.googleapis.com` in
+`cloud_storage.dart`; there is no connectivity package.
+
+### flutter_helper
+
+Shared UI infrastructure comes from the `flutter_helper` package
+(github.com/alexhokl/flutter-helper, pinned by tag in `pubspec.yaml`):
+`themesFromSeed`, `showMessage`, `GitCommitFooter`/`BuildInfo` and the lint
+configuration. Fix or extend those there rather than copying code into this
+app.
 
 ---
 
@@ -206,7 +221,9 @@ Key runtime packages:
 - The codebase has a few intentional typos in identifiers that have been left in place
   (e.g., `answeredCorreclty`, `_nextQuesitonIndex`, `noInternetConnectinoSnackBar`).
   Do not rename these without explicit instruction, as it would be a breaking change.
-- There is no CI configuration (`.github/` does not exist). Run `flutter analyze` and
-  `task test` locally to verify correctness before finalising changes.
+- CI is Google Cloud Build (`cloudbuild.yaml`), triggered by a `0.1.x` tag
+  (`task tag`): it builds a signed release APK and uploads it to
+  `gs://alexhokl_public/apk/`. It does not run the tests, so run
+  `flutter analyze` and `task test` locally before finalising changes.
 - The database file (`.db`) is downloaded from Google Cloud Storage at runtime; it is
   not committed to the repository.

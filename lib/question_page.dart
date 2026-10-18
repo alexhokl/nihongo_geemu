@@ -21,7 +21,7 @@ class QuestionPage extends StatefulWidget {
 class _QuestionPageState extends State<QuestionPage> {
   bool filled = false;
 
-  _onAnswer() {
+  void _onAnswer() {
     final correct = widget.gameState.isCorrectAnswer();
     if (correct) {
       widget.gameState.answeredCorreclty();

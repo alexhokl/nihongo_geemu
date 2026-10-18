@@ -3,10 +3,9 @@ import 'dart:io' as io;
 import 'package:flutter/material.dart';
 import 'package:nihongo_geemu/cloud_storage.dart';
 import 'package:nihongo_geemu/entry.dart';
-import 'package:path/path.dart' as p;
+import 'package:nihongo_geemu/local_storage.dart';
 import 'package:sqflite/sqflite.dart' as sqflite;
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
-import 'package:path_provider/path_provider.dart';
 
 Future<List<Entry>> getAllEntries() async {
   final Database db = await _getDatabaseConnection();
@@ -35,7 +34,7 @@ Future<List<String>> getLabels() async {
 
 Future<bool> ensureDatabaseFile(String localPath, String? localHash,
     bool hasConnection, String bucketName, String bucketPath) async {
-  final databaseLocalPath = await _getDatabaseLocalPath();
+  final databaseLocalPath = await getDatabaseLocalPath();
   if (hasConnection) {
     if (localHash != null) {
       final remoteDbMD5Hash =
@@ -70,7 +69,7 @@ Future<Database> _getDatabaseConnection() async {
     databaseFactory = databaseFactoryFfi;
   }
 
-  String dbPath = await _getDatabaseLocalPath();
+  String dbPath = await getDatabaseLocalPath();
   final isDbExist = await io.File(dbPath).exists();
   if (!isDbExist) {
     throw Exception("Database file does not exist: $dbPath");
@@ -78,11 +77,6 @@ Future<Database> _getDatabaseConnection() async {
   return databaseFactory.openDatabase(
     dbPath,
   );
-}
-
-Future<String> _getDatabaseLocalPath() async {
-  final io.Directory appDocumentsDir = await getApplicationDocumentsDirectory();
-  return p.join(appDocumentsDir.path, "databases", "vocab.db");
 }
 
 List<String> _parseArrayInJson(String jsonStr) {
