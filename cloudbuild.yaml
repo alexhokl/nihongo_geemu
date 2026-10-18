@@ -18,41 +18,15 @@ availableSecrets:
 
 steps:
   - name: "${_FLUTTER_IMAGE}"
-    id: Write local.properties
-    waitFor: ["-"]
-    entrypoint: bash
-    args:
-      - -c
-      - |
-        FLUTTER_SDK=$(dirname $(dirname $(which flutter)))
-        echo "flutter.sdk=$$FLUTTER_SDK" > android/local.properties
-        echo "sdk.dir=$$ANDROID_SDK_ROOT" >> android/local.properties
-
-  - name: "gcr.io/cloud-builders/gcloud"
-    id: Write signing files
-    waitFor: [Write local.properties]
-    entrypoint: bash
-    secretEnv: ["KEYSTORE_B64", "KEY_PROPERTIES"]
-    args:
-      - -c
-      - |
-        echo "$$KEYSTORE_B64" | base64 -d > android/app/release.jks
-        printf '%s' "$$KEY_PROPERTIES" > android/key.properties
-
-  - name: "${_FLUTTER_IMAGE}"
-    id: Flutter pub get
-    waitFor: [Write local.properties, Write signing files]
-    entrypoint: flutter
-    args: ["pub", "get", "--no-example"]
-
-  - name: "${_FLUTTER_IMAGE}"
     id: Build APK
-    waitFor: [Flutter pub get]
-    entrypoint: flutter
-    args:
-      - build
-      - apk
-      - --dart-define=GIT_COMMIT=$SHORT_SHA
+    waitFor: ["-"]
+    # Writes local.properties and the signing files, runs pub get
+    # and builds the release APK; see build-apk in the flutter-build image.
+    entrypoint: build-apk
+    args: ["."]
+    secretEnv: ["KEYSTORE_B64", "KEY_PROPERTIES"]
+    env:
+      - "GIT_COMMIT=$SHORT_SHA"
 
   - name: "gcr.io/cloud-builders/gcloud"
     id: Upload APK
